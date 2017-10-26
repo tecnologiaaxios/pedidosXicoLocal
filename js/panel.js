@@ -21,10 +21,20 @@ function haySesion() {
 haySesion();
 
 function mostrarPedidos() {
+  let tabla = $(`#tablaPedidos`).DataTable({
+    destroy: true,
+    "language": {
+      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
+    },
+    "searching": false
+  });
+
   let pedidosEntradaRef = db.ref('pedidoEntrada/');
   pedidosEntradaRef.on('value', function(snapshot) {
     let pedidos = snapshot.val();
     //let row="";
+    tabla.clear();
+    let filas = "";
 
     $('#tablaPedidos tbody').empty();
     for(let pedido in pedidos) {
@@ -48,7 +58,7 @@ function mostrarPedidos() {
       moment.locale('es');
       let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
 
-      let row = `<tr style="padding:0px 0px 0px;" class="no-pading">
+      filas += `<tr style="padding:0px 0px 0px;" class="no-pading">
                <td>${pedido}</td>
                <td>${fechaCapturaMostrar}</td>
                <td>${pedidos[pedido].encabezado.tienda}</td>
@@ -57,11 +67,12 @@ function mostrarPedidos() {
                ${estado}
                <td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="abrirModalEliminarPedido('${pedido}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
              </tr>`;
-             $('#tablaPedidos tbody').prepend(row);
+             //$('#tablaPedidos tbody').append(row);
     }
 
     $('#loaderPedidos').remove();
     $('#tablaPedidos').removeClass('hidden');
+    tabla.rows.add($(filas)).columns.adjust().draw();
   });
 }
 

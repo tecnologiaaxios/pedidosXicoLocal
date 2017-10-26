@@ -286,7 +286,7 @@ $(document).ready(function() {
   $('[data-toggle="tooltip"]').tooltip();
 });
 
-/*function generarPDF() {
+function generarPDF() {
   let pdf = new jsPDF('p', 'pt');
   console.log("HOla")
 
@@ -337,10 +337,10 @@ $(document).ready(function() {
   x.document.open();
   x.document.write(iframe);
   x.document.close();
-}*/
+}
 
 //De esta manera funciona en electron
-function generarPDF() {
+/*function generarPDF() {
   var jsPDF = require('jspdf');
   require('jspdf-autotable');
   let pdf = new jsPDF('p', 'pt');
@@ -387,4 +387,4 @@ function generarPDF() {
 
   pdf.save('Pedido.pdf');
   pdf.output('dataurlnewwindow');
-}
+}*/
