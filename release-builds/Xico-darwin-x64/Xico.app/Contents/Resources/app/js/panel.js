@@ -59,15 +59,14 @@ function mostrarPedidos() {
       let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
 
       filas += `<tr style="padding:0px 0px 0px;" class="no-pading">
-               <td>${pedido}</td>
-               <td>${fechaCapturaMostrar}</td>
-               <td>${pedidos[pedido].encabezado.tienda}</td>
-               <td>${pedidos[pedido].encabezado.ruta}</td>
-               <td class="no-padding text-center"><a href="pedido.html?id=${pedido}" class="btn btn-info btn-sm"><span style="padding-bottom:0px;" class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
-               ${estado}
-               <td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="abrirModalEliminarPedido('${pedido}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
-             </tr>`;
-             //$('#tablaPedidos tbody').append(row);
+                 <td>${pedido}</td>
+                 <td>${fechaCapturaMostrar}</td>
+                 <td>${pedidos[pedido].encabezado.tienda}</td>
+                 <td>${pedidos[pedido].encabezado.ruta}</td>
+                 <td class="no-padding text-center"><a href="pedido.html?id=${pedido}" class="btn btn-default btn-sm"><span style="padding-bottom:0px;" class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
+                 ${estado}
+                 <td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="abrirModalEliminarPedido('${pedido}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
+                 </tr>`;
     }
 
     $('#loaderPedidos').remove();
@@ -256,7 +255,6 @@ function mostrarPedidosEnProceso() {
       $('#loaderPedidosEnProceso').remove();
       $('#tablaPedidosEnProceso tbody').append(tr);
       $('#tablaPedidosEnProceso').removeClass('hidden');
-      console.log('hola')
 
       $('.input-group.date').datepicker({
         autoclose: true,

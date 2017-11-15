@@ -45,23 +45,42 @@ function mostrarDatos() {
     $('#tienda').html('Tienda: ' + datos.encabezado.tienda);
     let detalle = datos.detalle;
     $('#cantidad').html('<small class="lead">'+Object.keys(detalle).length+'</small>');
-    let trs = "";
+    let trs = "", kgTotal = 0, degusTotal = 0, pedidoPzTotal = 0, piezaTotal = 0, precioUnitarioTotal = 0, cambioFisicoTotal = 0;
     for(let producto in detalle) {
       let datosProducto = detalle[producto];
+      kgTotal += datosProducto.totalKg;
+      degusTotal += datosProducto.degusPz;
+      pedidoPzTotal += datosProducto.pedidoPz;
+      piezaTotal += datosProducto.totalPz;
+      precioUnitarioTotal += datosProducto.precioUnitario;
+      cambioFisicoTotal += datosProducto.cambioFisico;
       trs += `<tr>
-              <td>${datosProducto.clave}</td>
-              <td>${datosProducto.nombre}</td>
-              <td>${datosProducto.degusPz}</td>
-              <td>${datosProducto.pedidoPz}</td>
-              <td>${datosProducto.totalPz}</td>
-              <td>${datosProducto.totalKg}</td>
-              <td>${datosProducto.precioUnitario}</td>
-              <td>${datosProducto.unidad}</td>
-              <td>${datosProducto.cambioFisico}</td>
-              <td class="text-center"><button class="btn btn-warning btn-sm" onclick="abrirModalEditarProducto('${producto}', '${datosProducto.clave}')"><i class="glyphicon glyphicon-pencil" aria-hidden="true"></i></button></td>
-              <td class="text-center"><button class="btn btn-danger btn-sm" onclick="abrirModalEliminarProducto('${producto}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
-             </tr>`;
+                <td class="text-center">${datosProducto.clave}</td>
+                <td>${datosProducto.nombre}</td>
+                <td class="text-right">${datosProducto.degusPz}</td>
+                <td class="text-right">${datosProducto.pedidoPz}</td>
+                <td class="text-right">${datosProducto.totalPz}</td>
+                <td class="text-right">${datosProducto.totalKg}</td>
+                <td class="text-right">$ ${datosProducto.precioUnitario}</td>
+                <td class="text-center">${datosProducto.unidad}</td>
+                <td class="text-right">${datosProducto.cambioFisico}</td>
+                <td class="text-center"><button class="btn btn-warning btn-xs" onclick="abrirModalEditarProducto('${producto}', '${datosProducto.clave}')"><i class="glyphicon glyphicon-pencil" aria-hidden="true"></i></button></td>
+                <td class="text-center"><button class="btn btn-danger btn-xs" onclick="abrirModalEliminarProducto('${producto}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
+              </tr>`;
     }
+    trs += `<tr>
+              <td></td>
+              <td class="text-right"><strong>Totales</strong></td>
+              <td class="text-right"><strong>${degusTotal}</strong></td>
+              <td class="text-right"><strong>${pedidoPzTotal}</strong></td>
+              <td class="text-right"><strong>${piezaTotal}</strong></td>
+              <td class="text-right"><strong>${kgTotal}</strong></td>
+              <td class="text-right"><strong>$ ${precioUnitarioTotal}</strong></td>
+              <td></td>
+              <td class="text-right"><strong>${cambioFisicoTotal}</strong></td>
+              <td></td>
+              <td></td>
+            </tr>`;
 
     $('#tbodyProductos').empty().append(trs);
   });

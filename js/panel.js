@@ -59,15 +59,14 @@ function mostrarPedidos() {
       let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
 
       filas += `<tr style="padding:0px 0px 0px;" class="no-pading">
-               <td>${pedido}</td>
-               <td>${fechaCapturaMostrar}</td>
-               <td>${pedidos[pedido].encabezado.tienda}</td>
-               <td>${pedidos[pedido].encabezado.ruta}</td>
-               <td class="no-padding text-center"><a href="pedido.html?id=${pedido}" class="btn btn-info btn-sm"><span style="padding-bottom:0px;" class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
-               ${estado}
-               <td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="abrirModalEliminarPedido('${pedido}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
-             </tr>`;
-             //$('#tablaPedidos tbody').append(row);
+                 <td>${pedido}</td>
+                 <td>${fechaCapturaMostrar}</td>
+                 <td>${pedidos[pedido].encabezado.tienda}</td>
+                 <td>${pedidos[pedido].encabezado.ruta}</td>
+                 <td class="no-padding text-center"><a href="pedido.html?id=${pedido}" class="btn btn-default btn-sm"><span style="padding-bottom:0px;" class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
+                 ${estado}
+                 <td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="abrirModalEliminarPedido('${pedido}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
+                 </tr>`;
     }
 
     $('#loaderPedidos').remove();
@@ -133,7 +132,7 @@ function mostrarHistorialPedidos() {
 
 function guardarFechaRuta(idPedidoPadre) {
   let pedidoPadreRef = db.ref('pedidoPadre/');
-  let nuevaFechaRuta = $('#fechaRuta-'+idPedidoPadre).val();
+  let nuevaFechaRuta = $(`#fechaRuta-${idPedidoPadre}`).val();
   pedidoPadreRef.child(idPedidoPadre).update({
     fechaRuta: nuevaFechaRuta
   });
@@ -141,7 +140,7 @@ function guardarFechaRuta(idPedidoPadre) {
 
 function guardarRuta(idPedidoPadre) {
   let pedidoPadreRef = db.ref('pedidoPadre/');
-  let nuevaRuta = $('#ruta-'+idPedidoPadre).val();
+  let nuevaRuta = $(`#ruta-${idPedidoPadre}`).val();
   pedidoPadreRef.child(idPedidoPadre).update({
     ruta: nuevaRuta
   });
@@ -156,61 +155,15 @@ function mostrarPedidosEnProceso() {
       loader.remove();
       $('#pPedidosProceso').html('No se encontraron pedidos en proceso');
     }
-    let row = "";
+    let filas = "";
     $('#tablaPedidosEnProceso tbody').empty();
     for(pedidoPadre in pedidosPadre) {
-      let tr = $('<tr/>');
-      let td = $('<td/>');
-      let form = $('<form/>', {'class': 'form-inline'});
-      let group = $('<div/>', {'class': 'form-group'});
-      let div = $('<div/>', {'class': 'input-group date', 'style': 'width: 200px;'});
-      let input = $('<input/>', {
-        'class': 'form-control',
-        'type': 'text',
-        'placeholder': 'Fecha de ruta',
-        'id': 'fechaRuta-'+pedidoPadre
-      });
-
-      //let span = $('<span/>', {'class': 'input-group-btn'});
-      let button = $('<button/>', {
-        'class': 'btn btn-success',
-        'onclick': 'guardarFechaRuta("'+pedidoPadre+'")',
-        'html': '<i class="fa fa-floppy-o" aria-hidden="true"></i>'
-      });
-
-      let td2 = $('<td/>');
-      let div2 = $('<div/>', {'class': 'input-group', 'style': 'width: 200px;'});
-      let input2 = $('<input/>', {
-        'class': 'form-control',
-        'type': 'text',
-        'style': '',
-        'placeholder': 'Ruta',
-        'id': 'ruta-'+pedidoPadre
-      });
-
-      let span2 = $('<span/>', {'class': 'input-group-btn'});
-
-      let button2 = $('<button/>', {
-        'class': 'btn btn-success',
-        'onclick': 'guardarRuta("'+pedidoPadre+'")',
-        'html': '<i class="fa fa-floppy-o" aria-hidden="true"></i>'
-      });
-
-      /*row += '<tr>' +
-              '<td>' + pedidoPadre + '</td>' +
-              '<td>' + pedidosPadre[pedidoPadre].fechaCreacionPadre + '</td>' +
-              '<td>' + pedidosPadre[pedidoPadre].fechaRuta + '</td>' +
-              '<td><input type="text" class="form-control" style="width: 100px; display:inline-block padding-right: 10px;" placeholder="Nueva fecha de ruta"><button class="btn btn-primary" type="button"><i class="fa fa-floppy-o" aria-hidden="true"></i></button></td>' +
-              '<td>' + pedidosPadre[pedidoPadre].ruta + '</td>' +
-              '<td></td>' +
-             '</tr>';*/
-
       let diaCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(0,2);
       let mesCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(3,2);
       let añoCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(6,4);
       let fechaCaptura = mesCaptura + '/' + diaCaptura + '/' + añoCaptura;
       moment.locale('es');
-      //let fechaCapturaMostrar = moment(fechaCaptura).format('DD MMMM YYYY');
+
       let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
 
       let fechaRutaMostrar;
@@ -231,40 +184,45 @@ function mostrarPedidosEnProceso() {
         rutaMostrar = pedidosPadre[pedidoPadre].ruta;
       }
 
-      row = '<td>' + pedidosPadre[pedidoPadre].clave + '</td>' +
-            '<td>' + fechaCapturaMostrar + '</td>' +
-            '<td>' + fechaRutaMostrar + '</td>';
-
-      div.append(input);
-      div.append('<span class="input-group-addon btn-primary"><i class="fa fa-calendar"></i></span>');
-      group.append(div);
-      form.append(group);
-      form.append(button);
-      td.append(form);
-      tr.append(row);
-      tr.append(td);
-      tr.append('<td>' + rutaMostrar + '</td>');
-      div2.append(input2);
-      span2.append(button2);
-      div2.append(span2);
-      td2.append(div2);
-      tr.append(td2);
-      tr.append('<td class="text-center"><i style="color:#FFCC25; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>');
-      tr.append('<td class="text-center"><a class="btn btn-info" href="pedidoPadre.html?id='+pedidoPadre+'">Ver más</a></td>');
-
-      $('#pPedidosProceso').remove();
-      $('#loaderPedidosEnProceso').remove();
-      $('#tablaPedidosEnProceso tbody').append(tr);
-      $('#tablaPedidosEnProceso').removeClass('hidden');
-      console.log('hola')
-
-      $('.input-group.date').datepicker({
-        autoclose: true,
-        format: "dd/mm/yyyy",
-        startDate: "today",
-        language: "es"
-      });
+      filas += `<tr>
+                  <td>${pedidosPadre[pedidoPadre].clave}</td>
+                  <td>${fechaCapturaMostrar}</td>
+                  <td>${fechaRutaMostrar}</td>
+                  <td class="text-center">
+                    <form class="form-inline">
+                      <div class="form-group">
+                        <div class="input-group date" style="width: 200px;">
+                          <input class="form-control" type="text" placeholder="Fecha de ruta" id="fechaRuta-${pedidoPadre}">
+                          <span style="color: white;" class="input-group-addon btn-primary"><i class="fa fa-calendar"></i></span>
+                        </div>
+                      </div>
+                      <button class="btn btn-success" type="button" onclick="guardarFechaRuta('${pedidoPadre}')"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
+                    </form>
+                  </td>
+                  <td>${rutaMostrar}</td>
+                  <td class="text-center">
+                    <div class="input-group" style="width: 200px;">
+                      <input class="form-control" type="text" style="" placeholder="Ruta" id="ruta-${pedidoPadre}">
+                      <span class="input-group-btn"><button class="btn btn-success" onclick="guardarRuta(${pedidoPadre})"><i class="fa fa-floppy-o" aria-hidden="true"></i></button></span>
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <i style="color:#FFCC25; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i>
+                  </td>
+                  <td class="text-center"><a class="btn btn-info" href="pedidoPadre.html?id=${pedidoPadre}">Ver más</a></td>
+                </tr>`;
     }
+    $('#pPedidosProceso').remove();
+    $('#loaderPedidosEnProceso').remove();
+    $('#tablaPedidosEnProceso tbody').html(filas);
+    $('#tablaPedidosEnProceso').removeClass('hidden');
+
+    $('.input-group.date').datepicker({
+      autoclose: true,
+      format: "dd/mm/yyyy",
+      startDate: "today",
+      language: "es"
+    });
   });
 }
 
@@ -507,7 +465,8 @@ function cancelarPedidoPadre() {
 
   filas.each(function (i) {
     $('#tablaPedidos tbody').append(filas[i]);
-    $('#tablaPedidosPadre tbody').remove(filas[i]);
+    $('#tablaPedidoPadre tbody').remove(filas[i]);
+    $('#tablaPedidoPadre tbody').append('<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>');
   });
 }
 

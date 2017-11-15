@@ -94,22 +94,27 @@ function mostrarTodas() {
       if(productos[producto].unidad == "KG") {
         importe = productos[producto].totalKg * productos[producto].precioUnitario;
       }
-      row += '<tr>' +
-              '<td>' + productos[producto].clave + '</td>' +
-              '<td>' + productos[producto].nombre + '</td>' +
-              //'<td></td>' +
-              //'<td></td>' +
-              '<td class="TotalPz">'+ productos[producto].totalPz +'</td>' +
-              '<td class="TotalKg">'+ productos[producto].totalKg.toFixed(2) +'</td>' +
-              '<td class"precioUnitario>$ '+ productos[producto].precioUnitario.toFixed(2) +'</td>' +
-              '<td class="Importe">$ '+ importe.toFixed(2) +'</td>'+
-             '</tr>';
+      row += `<tr>
+              <td>${productos[producto].clave}</td>
+              <td>${productos[producto].nombre}</td>
+              <td class="TotalPz">${productos[producto].totalPz}</td>
+              <td class="TotalKg">${productos[producto].totalKg.toFixed(2)}</td>
+              <td class"precioUnitario>$ ${productos[producto].precioUnitario.toFixed(2)}</td>
+              <td class="Importe">$ ${importe.toFixed(2)}</td>
+             </tr>`;
       TotalPzs += productos[producto].totalPz;
       TotalKgs += productos[producto].totalKg;
       TotalPrecUni += productos[producto].precioUnitario;
       TotalImporte += importe;
     }
-    row += '<tr><td></td><td>Totales</td><td>'+TotalPzs+'</td><td>'+TotalKgs.toFixed(2)+'</td><td>$ '+TotalPrecUni.toFixed(2)+'</td><td>$ '+TotalImporte.toFixed(2)+'</td></tr>';
+    row += `<tr>
+              <td></td>
+              <td><strong>Totales</strong></td>
+              <td><strong>${TotalPzs}</strong></td>
+              <td><strong>${TotalKgs.toFixed(2)}</strong></td>
+              <td><strong>$ ${TotalPrecUni.toFixed(2)}</strong></td>
+              <td><strong>$ ${TotalImporte.toFixed(2)}</strong></td>
+            </tr>`;
     $('#theadTablaPedidos').html('<tr><th>Clave</th><th>Descripción</th><th>Total Pz</th><th>Total Kg</th><th>Precio unit.</th><th>Importe</th></tr>');
     $('#tbodyTablaPedidos').html(row);
   });
@@ -166,21 +171,27 @@ function mostrarUna(idPedidoHijo) {
       totalPiezas += cantidadPiezas;
       totalKilos += cantidadKg;
       totalImporte += Number(importe.toFixed(2));
-      row += '<tr>' +
-              '<td>' + detalles[pedido].claveConsorcio + '</td>' +
-              '<td>' + detalles[pedido].clave + '</td>' +
-              '<td>' + detalles[pedido].nombre + '</td>' +
-              '<td>' + cantidadPiezas + '</td>' +
-              '<td>' + cantidadKg.toFixed(2) + '</td>' +
-              '<td>$ ' + detalles[pedido].precioUnitario.toFixed(2) + '</td>' +
-              '<td>$ ' + importe.toFixed(2) + '</td>' +
-              //'<td class="TotalPz"></td>' +
-              //'<td class="TotalKg"></td>' +
-             '</tr>';
+      row += `<tr>
+                <td>${detalles[pedido].claveConsorcio}</td>
+                <td>${detalles[pedido].clave}</td>
+                <td>${detalles[pedido].nombre}</td>
+                <td>${cantidadPiezas}</td>
+                <td>${cantidadKg.toFixed(2)}</td>
+                <td>$ ${detalles[pedido].precioUnitario.toFixed(2)}</td>
+                <td>$ ${importe.toFixed(2)}</td>
+              </tr>`;
     }
 
     let fechaImpresion = new moment().format("DD/MM/YYYY");
-    row += '<tr><td></td><td></td><td>Total general</td><td>'+totalPiezas+'</td><td>'+totalKilos.toFixed(2)+'</td><td></td><td>$ '+totalImporte.toFixed(2)+'</td>';
+    row += `<tr>
+              <td></td>
+              <td></td>
+              <td><strong>Total general</strong></td>
+              <td><strong>${totalPiezas}</strong></td>
+              <td><strong>${totalKilos.toFixed(2)}</strong></td>
+              <td></td>
+              <td><strong>$ ${totalImporte.toFixed(2)}</strong></td>
+            </tr>`;
     $('#theadTablaPedidos').html(`<tr><th>Clave Cliente</th><th>Clave Xico</th><th>Descripción</th><th>${pieza}</th><th>Kg</th><th>Precio unit.</th><th>Importe</th></tr>`);
     $('#tbodyTablaPedidos').html(row);
 
