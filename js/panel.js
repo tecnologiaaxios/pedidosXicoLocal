@@ -32,7 +32,6 @@ function mostrarPedidos() {
   let pedidosEntradaRef = db.ref('pedidoEntrada/');
   pedidosEntradaRef.on('value', function(snapshot) {
     let pedidos = snapshot.val();
-    //let row="";
     tabla.clear();
     let filas = "";
 
@@ -41,32 +40,32 @@ function mostrarPedidos() {
       let estado = "";
       switch(pedidos[pedido].encabezado.estado) {
         case "Pendiente":
-          estado = '<td class="no-padding text-center"><i style="color:#d50000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>';
+          estado = `<td class="no-padding text-center"><i style="color:#d50000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
           break;
         case "En proceso":
-          estado = '<td class="no-padding text-center"><i style="color:#FF8000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>';
+          estado = `<td class="no-padding text-center"><i style="color:#FF8000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
           break;
         case "Lista":
-          estado = '<td class="no-padding text-center"><i style="color:#70E707; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>';
+          estado = `<td class="no-padding text-center"><i style="color:#70E707; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
           break;
       }
 
       let diaCaptura = pedidos[pedido].encabezado.fechaCaptura.substr(0,2);
       let mesCaptura = pedidos[pedido].encabezado.fechaCaptura.substr(3,2);
       let añoCaptura = pedidos[pedido].encabezado.fechaCaptura.substr(6,4);
-      let fechaCaptura = mesCaptura + '/' + diaCaptura + '/' + añoCaptura;
+      let fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
       moment.locale('es');
       let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
 
       filas += `<tr style="padding:0px 0px 0px;" class="no-pading">
-                 <td>${pedido}</td>
-                 <td>${fechaCapturaMostrar}</td>
-                 <td>${pedidos[pedido].encabezado.tienda}</td>
-                 <td>${pedidos[pedido].encabezado.ruta}</td>
-                 <td class="no-padding text-center"><a href="pedido.html?id=${pedido}" class="btn btn-default btn-sm"><span style="padding-bottom:0px;" class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
-                 ${estado}
-                 <td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="abrirModalEliminarPedido('${pedido}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
-                 </tr>`;
+                  <td>${pedido}</td>
+                  <td>${fechaCapturaMostrar}</td>
+                  <td>${pedidos[pedido].encabezado.tienda}</td>
+                  <td>${pedidos[pedido].encabezado.ruta}</td>
+                  <td class="no-padding text-center"><a href="pedido.html?id=${pedido}" class="btn btn-default btn-sm"><span style="padding-bottom:0px;" class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
+                  ${estado}
+                  <td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="abrirModalEliminarPedido('${pedido}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
+                </tr>`;
     }
 
     $('#loaderPedidos').remove();
@@ -98,31 +97,31 @@ function mostrarHistorialPedidos() {
       for(let pedido in pedidosEntrada) {
         switch(pedidosEntrada[pedido].encabezado.estado) {
           case "Pendiente":
-            estado = '<td class="no-padding"><i style="color:#d50000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>';
+            estado = `<td class="no-padding"><i style="color:#d50000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
             break;
           case "En proceso":
-            estado = '<td class="no-padding"><i style="color:#FF8000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>';
+            estado = `<td class="no-padding"><i style="color:#FF8000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
             break;
           case "Lista":
-            estado = '<td class="no-padding"><i style="color:#70E707; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>';
+            estado = `<td class="no-padding"><i style="color:#70E707; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
             break;
         }
 
         let diaCaptura = pedidosEntrada[pedido].encabezado.fechaCaptura.substr(0,2);
         let mesCaptura = pedidosEntrada[pedido].encabezado.fechaCaptura.substr(3,2);
         let añoCaptura = pedidosEntrada[pedido].encabezado.fechaCaptura.substr(6,4);
-        let fechaCaptura = mesCaptura + '/' + diaCaptura + '/' + añoCaptura;
+        let fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
         moment.locale('es');
         let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
 
-        row += '<tr style="padding:0px 0px 0px;" class="no-pading">' +
-                 '<td>' + pedido +'</td>' +
-                 '<td>' + fechaCapturaMostrar + '</td>' +
-                 '<td>' + pedidosEntrada[pedido].encabezado.tienda +'</td>' +
-                 '<td>' + pedidosEntrada[pedido].encabezado.ruta +'</td>' +
-                 '<td class="no-padding"><button type="button" class="btn btn-info btn-sm"><span style="padding-bottom:0px;" class="glyphicon glyphicon-print"></span></button></td>' +
-                 estado +
-               '</tr>';
+        row += `<tr style="padding:0px 0px 0px;" class="no-pading">
+                  <td>${pedido}</td>
+                  <td>${fechaCapturaMostrar}</td>
+                  <td>${pedidosEntrada[pedido].encabezado.tienda}</td>
+                  <td>${pedidosEntrada[pedido].encabezado.ruta}</td>
+                  <td class="no-padding"><button type="button" class="btn btn-info btn-sm"><span style="padding-bottom:0px;" class="glyphicon glyphicon-print"></span></button></td>
+                  ${estado}
+               </tr>`;
       }
     }
 
@@ -161,7 +160,7 @@ function mostrarPedidosEnProceso() {
       let diaCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(0,2);
       let mesCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(3,2);
       let añoCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(6,4);
-      let fechaCaptura = mesCaptura + '/' + diaCaptura + '/' + añoCaptura;
+      let fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
       moment.locale('es');
 
       let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
@@ -172,7 +171,7 @@ function mostrarPedidosEnProceso() {
         let diaRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(0,2);
         let mesRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(3,2);
         let añoRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(6,4);
-        let fechaRuta = mesRuta + '/' + diaRuta + '/' + añoRuta;
+        let fechaRuta = `${mesRuta}/${diaRuta}/${añoRuta}`;
 
         fechaRutaMostrar = moment(fechaRuta).format('LL');
       } else {
@@ -201,9 +200,11 @@ function mostrarPedidosEnProceso() {
                   </td>
                   <td>${rutaMostrar}</td>
                   <td class="text-center">
-                    <div class="input-group" style="width: 200px;">
-                      <input class="form-control" type="text" style="" placeholder="Ruta" id="ruta-${pedidoPadre}">
-                      <span class="input-group-btn"><button class="btn btn-success" onclick="guardarRuta(${pedidoPadre})"><i class="fa fa-floppy-o" aria-hidden="true"></i></button></span>
+                    <div class="form-group">
+                      <div class="input-group" style="width: 200px;">
+                        <input class="form-control" type="text" style="" placeholder="Ruta" id="ruta-${pedidoPadre}"/>
+                        <span class="input-group-btn"><button class="btn btn-success" onclick="guardarRuta(${pedidoPadre})"><i class="fa fa-floppy-o" aria-hidden="true"></i></button></span>
+                      </div>
                     </div>
                   </td>
                   <td class="text-center">
