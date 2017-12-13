@@ -197,16 +197,20 @@ function mostrarUna(idPedidoHijo) {
     $('#theadTablaPedidos').html(`<tr><th>Clave Cliente</th><th>Clave Xico</th><th>Descripción</th><th>${pieza}</th><th>Kg</th><th>Precio unit.</th><th>Importe</th></tr>`);
     $('#tbodyTablaPedidos').html(row);
 
-    $('#theadTableInfo').html('<tr><th>O. C.:</th><th>Fecha: '+fechaImpresion+'</th></tr>');
+    $('#theadTableInfo').html(`<tr><th>O. C.:</th><th>Fecha: ${fechaImpresion}</th></tr>`);
     $('#tbodyTableInfo').html(
-      '<tr>'+
-        '<td>Consorcio:</td>'+
-        '<td>'+encabezado.consorcio+'</td>'+
-      '</tr>'+
-      '<tr>'+
-        '<td>SUC:</td>'+
-        '<td>'+tienda+'</td>'+
-      '</tr>');
+      `<tr>
+        <td>Núm. de orden:</td>
+        <td><strong>${encabezado.numOrden}</strong></td>
+      </tr>
+      <tr>
+        <td>Consorcio:</td>
+        <td>${encabezado.consorcio}</td>
+      </tr>
+      <tr>
+        <td>SUC:</td>
+        <td>${tienda}</td>
+      </tr>`);
     $('#tableinfo').show();
 
     $('.TotalPz').text(Tpz);

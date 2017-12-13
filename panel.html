@@ -67,7 +67,7 @@
             </ul>
             <!--<div id="spanNotificaciones" style="display:none; background-color:red; color:white; border-radius:5px; padding:10%;  font-size:10px; font-family: intelo-bold; transform:translate(10px, -22px);"></div>-->
           </li>
-          <li><img src="http://lorempixel.com/40/40/" alt="..." class="img-circle"> </li>
+          <li><a href="" id="btnPerfil"><img src="http://lorempixel.com/40/40/" alt="..." class="img-circle"></a></li>
           <li class="dropdown no-padding">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
               <i class="fa fa-caret-down"></i>
@@ -104,144 +104,152 @@
       <div id="page-wrapper">
         <div class="row">
           <ul class="nav nav-pills nav-justified" style="padding:30px;">
-            <li class="active"><a onclick="pedidosRecibidos()" id="pills" href="#"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Pedidos Recibidos</a></li>
-            <li class="active"><a onclick="pedidosEnProceso()" id="pills" href="#"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Pedidos en Proceso</a></li>
-            <li class="active"><a onclick="historialPedidos()" id="pills" href="#"><span class="glyphicon glyphicon-folder-open" ></span> Historial de pedidos</a></li>
+            <li role="presentation" class="active"><a onclick="pedidosRecibidos()" class="pills" href="#PedidosRecibidos" aria-controls="PedidosRecibidos" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Pedidos recibidos</a></li>
+            <li role="presentation"><a onclick="pedidosEnProceso()" class="pills" href="#pedidosEnProceso" aria-controls="pedidosEnProceso" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Pedidos en proceso</a></a></li>
+            <li role="presentation"><a onclick="historialPedidos()" class="pills" href="#historialPedidos" aria-controls="historialPedidos" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-folder-open"></span> Historial de pedidos</a></a></li>
           </ul>
-          <!--<div class="nav nav-pills nav-justified" data-toggle="buttons" style="padding:30px;">
-            <label id="pills" onclick="pedidosRecibidos()" class="btn btn-primary active">
-              <input type="radio" name="options" autocomplete="off" checked><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Pedidos Recibidos
-            </label>
-            <label id="pills" onclick="pedidosEnProceso()" class="btn btn-primary">
-              <input type="radio" name="options" autocomplete="off"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Pedidos en Proceso
-            </label>
-            <label id="pills" onclick="historialPedidos()" class="btn btn-primary">
-              <input type="radio" name="options" autocomplete="off"><span class="glyphicon glyphicon-folder-open" ></span> Historial de pedidos
-            </label>
-          </div>-->
-          <div id="pedidosRecibidos" class="col-lg-12">
-            <div class="form-inline">
-              <!-- <div class="form-group">
-                <span class="glyphicon glyphicon-filter"></span></span>Filtros</span>
-              </div>
-              <div class="form-group">
-                <select class="form-control" style="min-width:150px;">
-                <option value="">Ruta</option>
-                </select>
-              </div>
-              <select class="selectpicker" multiple>
-                <option>Lunes</option>
-                <option>Martes</option>
-                <option>Miercoles</option>
-                <option>Jueves</option>
-                <option>Viernes</option>
-                <option>Sabado</option>
-                <option>Domingo</option>
-              </select>
-              <div class="form-group">
-                <select class="form-control" style="min-width:150px;">
-                  <option value="">Detallado</option>
-                </select>
-              </div> -->
-              <!--<div class="input-group" style="float:right;">
-                <input type="text" class="form-control" placeholder="Buscar por...">
-                <span class="input-group-btn">
-                  <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                </span>
-              </div>--><!-- /input-group -->
-              <div style="float:right;" class="form-group has-feedback">
-                <input style="font-style: italic;" id="buscarPedido"  type="search" class="form-control" placeholder="Buscar" />
-                <i style="color: #4388E5;" class="form-control-feedback glyphicon glyphicon-search rota-horizontal"></i>
-              </div>
-            </div>
-            <div id="loaderPedidos" class="loader"></div>
-            <!-- <div class="table-responsive"> -->
-              <table id="tablaPedidos" class="table-hover hidden table table-condensed table-bordered table-striped" style="margin-top:15px;">
-                <thead>
-                  <tr>
-                    <th>Clave</th>
-                    <th>Fecha de captura</th>
-                    <th>Tienda</th>
-                    <th>Ruta</th>
-                    <th class="text-center">Detalles</th>
-                    <th class="text-center">Estado</th>
-                    <th class="text-center">Eliminar</th>
-                  </tr>
-                </thead>
-                <tbody id="tbodyTablaPedidos">
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="pedidosRecibidos">
+              <div class="container-fluid">
+                <!-- <ul class="nav nav-tabs" role="tablist">
+                  <li role="presentation" class="active"><a id="pestañaPedidos" onclick="pedidosRecibidos()" href="#tabPedidos" aria-controls="tabPedidos" role="tab" data-toggle="tab">Pedidos</a></li>
+                  <li role="presentation"><a id="pestañaOrdenesCompra" onclick="mostrarOrdenesCompra()" href="#tabOrdenesCompra" aria-controls="tabOrdenesCompra" role="tab" data-toggle="tab">Ordenes de Compra</a></li>
+                </ul>
+                <div class="tab-content">
+                  <div role="tabpanel" class="tab-pane active" id="tabPedidos"> -->
+                    <div id="loaderPedidos" class="loader"></div>
+                    <div class="panel panel-default">
+                      <div class="panel-body">
+                        <table id="tablaPedidos" class="table-hover table table-condensed table-bordered table-striped" style="margin-top:15px;">
+                          <thead>
+                            <tr>
+                              <th>Clave</th>
+                              <th>Núm. de orden</th>
+                              <th>Fecha de captura</th>
+                              <th>Tienda</th>
+                              <th>Ruta</th>
+                              <th class="text-center">Detalles</th>
+                              <th class="text-center">Estado</th>
+                              <th class="text-center">Eliminar</th>
+                            </tr>
+                          </thead>
+                          <tbody id="tbodyTablaPedidos">
 
-                </tbody>
-              </table>
-            <!-- </div> --><!--/.table-responsive-->
-            <div class="collapse" id="collapseExample">
-              <div class="well">
-                <div class="table-responsive">
-                  <table id="tablaPedidoPadre" class="table table-condensed table-bordered" style="padding:0px 0px 0px; ">
-                    <thead>
-                      <th>Clave</th>
-                      <th>Fecha de captura</th>
-                      <th>Tienda</th>
-                      <th>Ruta</th>
-                      <th>Detalles</th>
-                      <th>Estado</th>
-                      <th>Eliminar</th>
-                    </thead>
-                    <tbody id="tbodyTablaPedidoPadre" style="border: 2px solid grey; border-style: dashed; height:200px; width:100%;"  class="tabla-drag">
-                      <h4>Arrastra los pedidos dentro de las líneas punteadas para agruparlos</h4>
-                      <tr id="vacio" style="padding:0px 0px 0px;" class="no-pading">
-                        <td scope="row" style="border:none;"></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td class="no-padding"></td>
-                        <td class="no-padding"> </td>
-                        <td></td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <button class="btn btn-success" type="button" onclick="generarPedidoPadre()">Generar pedido</button>
-                  <button class="btn btn-danger" type="button" onclick="cancelarPedidoPadre()">Cancelar</button>
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div role="tabpanel" class="tab-pane" id="tabOrdenesCompra">
+                    <div class="panel panel-default">
+                      <div class="panel-body">
+                        <table id="tablaOrdenesCompra" class="table-hover table table-condensed table-bordered table-striped" style="margin-top:15px;">
+                          <thead>
+                            <tr>
+                              <th>Clave</th>
+                              <th>Fecha de captura</th>
+                              <th>Tienda</th>
+                              <th>Ruta</th>
+                              <th class="text-center">Detalles</th>
+                              <th class="text-center">Estado</th>
+                              <th class="text-center">Eliminar</th>
+                            </tr>
+                          </thead>
+                          <tbody id="tbodyTablaOrdenes">
+
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div> -->
+                  <div class="collapse" id="collapseExample">
+                    <div class="well">
+                      <div class="table-responsive">
+                        <table id="tablaPedidoPadre" class="table table-condensed table-bordered" style="padding:0px 0px 0px; ">
+                          <thead>
+                            <tr>
+                              <th>Clave</th>
+                              <th>Núm. de orden</th>
+                              <th>Fecha de captura</th>
+                              <th>Tienda</th>
+                              <th>Ruta</th>
+                              <th>Detalles</th>
+                              <th>Estado</th>
+                              <th>Eliminar</th>
+                            </tr>
+                          </thead>
+                          <tbody id="tbodyTablaPedidoPadre" style="border: 2px solid grey; border-style: dashed; height:200px; width:100%;"  class="tabla-drag">
+                            <h4>Arrastra los pedidos dentro de las líneas punteadas para agruparlos</h4>
+                            <tr id="vacio" style="padding:0px 0px 0px;" class="no-pading">
+                              <td scope="row" style="border:none;"></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td class="no-padding"></td>
+                              <td class="no-padding"> </td>
+                              <td></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <button class="btn btn-success" type="button" onclick="generarPedidoPadre()">Generar pedido</button>
+                        <button class="btn btn-danger" type="button" onclick="cancelarPedidoPadre()">Cancelar</button>
+                      </div>
+                    </div>
+                  </div>
+                <!--</div> -->
+              </div>
+            </div><!-- /.col-lg-12 -->
+            <div role="tabpanel" class="tab-pane" id="pedidosEnProceso">
+              <div id="loaderPedidosEnProceso" class="loader"></div>
+              <h4 class="text-center" id="pPedidosProceso"></h4>
+              <div class="container-fluid">
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    <table id="tablaPedidosEnProceso" class="table-hover hidden table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                      <thead>
+                        <tr>
+                          <th>Clave</th>
+                          <th>Fecha de captura</th>
+                          <th>Fecha ruta</th>
+                          <th class="text-center">Modificar fecha ruta</th>
+                          <th>Ruta</th>
+                          <th class="text-center">Modificar ruta</th>
+                          <th class="text-center">Estado</th>
+                          <th class="text-center">Detalles</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tbodyTablaPedidos">
+
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </div>
-          </div><!-- /.col-lg-12 -->
-          <div id="pedidosEnProceso" class="col-lg-12">
-            <div id="loaderPedidosEnProceso" class="loader"></div>
-            <div class="table-responsive">
-              <h4 class="text-center" id="pPedidosProceso"></h4>
-              <table id="tablaPedidosEnProceso" class="table-hover hidden table table-condensed table-striped table-bordered" style="margin-top:15px;">
-                <thead>
-                  <th>Clave</th>
-                  <th>Fecha de captura</th>
-                  <th>Fecha ruta</th>
-                  <th class="text-center">Modificar fecha ruta</th>
-                  <th>Ruta</th>
-                  <th class="text-center">Modificar ruta</th>
-                  <th class="text-center">Estado</th>
-                  <th class="text-center">Detalles</th>
-                </thead>
-                <tbody id="tbodyTablaPedidos">
+            <div role="presentation" class="tab-pane" id="historialPedidos">
+              <div class="container-fluid">
+                <div class="panel panel-default">
+                  <div class="panel-body">
+                    <table id="tablaHistorialPedidos" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                      <thead>
+                        <tr>
+                          <th>Clave</th>
+                          <th>Fecha de captura</th>
+                          <th>Tienda</th>
+                          <th>Ruta</th>
+                          <th>Imprimir</th>
+                          <th>Estado</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tbodyTablaPedidos">
 
-                </tbody>
-              </table>
-            </div><!--/.table-responsive-->
-          </div>
-          <div id="historialPedidos" class="col-lg-12">
-            <div class="table-responsive">
-              <table id="tablaHistorialPedidos" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
-                <thead>
-                  <th>Clave</th>
-                  <th>Fecha de captura</th>
-                  <th>Tienda</th>
-                  <th>Ruta</th>
-                  <th>Imprimir</th>
-                  <th>Estado</th>
-                </thead>
-                <tbody id="tbodyTablaPedidos">
-
-                </tbody>
-              </table>
-            </div><!--/.table-responsive-->
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div id="modalConfirmarEliminarPedido" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
@@ -260,34 +268,135 @@
               </div><!-- /.modal-content -->
             </div><!-- /.modal-dialog -->
           </div><!-- /.modal -->
+          <div id="modalConfirmarEliminarOrden" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Confirmar eliminación</h4>
+                </div>
+                <div class="modal-body">
+                  <p>¿Realmente desea eliminar este pedido?</p>
+                </div>
+                <div class="modal-footer">
+                  <button id="btnCancelarOrden" type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                  <button id="btnConfirmarOrden" type="button" class="btn btn-primary" data-dismiss="modal">Confirmar</button>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
+          <div id="modalPerfil" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Editar perfil</h4>
+                </div>
+                <div class="modal-body">
+                  <form>
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="thumbnail card" data-toggle="tooltip">
+                          <img src="http://lorempixel.com/40/40/" style="height: 200px;">
+                        </div>
+                        <div class="form-group">
+                          <input type="file" accept="image/jpeg" class="form-control">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="nombreEditar">Nombre:</label>
+                          <input type="text" class="form-control" id="nombreEditar">
+                          <span id="helpBlockNombreEditar" class="hidden help-block">Campo obligatorio</span>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="emailEditar">Email:</label>
+                          <input type="text" class="form-control" id="emailEditar">
+                          <span id="helpBlockEmailEditar" class="hidden help-block">Campo obligatorio</span>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="puestoEditar">Puesto:</label>
+                          <input type="text" class="form-control" id="puestoEditar" readonly>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="regionEditar">Región:</label>
+                          <input type="text" class="form-control" id="regionEditar" readonly>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="descripcionEditar">Descripción</label>
+                          <textarea id="descripcionEditar" class="form-control" name="descripcionEditar" rows="3" cols="80" readonly></textarea>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="usernameEditar">Nombre de usuario:</label>
+                          <input type="text" class="form-control" id="usernameEditar">
+                          <span id="helpBlockUsernameEditar" class="hidden help-block">Campo obligatorio</span>
+                        </div>
+                      </div>
+                      <div class="col-md-5">
+                        <label for="contraseñaEditar">Cambiar contraseña:</label>
+                        <div class="input-group">
+                          <input type="text" class="form-control" id="contraseñaEditar" name="contraseñaEditar" readonly>
+                          <span class="input-group-btn">
+                            <button onclick="permitirCambioContraseña()" class="btn btn-default" type="button"><i class="fa fa-pencil"></i></button>
+                          </span>
+                          <span class="input-group-btn">
+                            <button id="btnCambiarContraseña" class="btn btn-success" type="button" disabled>Guardar</button>
+                          </span>
+                        </div>
+                        <span id="helpBlockContraseñaEditar" class="hidden help-block"></span>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                  <button id="btnActualizarProducto" type="button" class="btn btn-primary">Guardar cambios</button>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
         </div><!-- /.row -->
       </div><!-- /#page-wrapper -->
     </div><!-- /#wrapper -->
     <!-- jQuery -->
-    <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
-    <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script>
+    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <!-- <script src="vendor/bootstrap/js/bootstrap.min.js"></script> -->
     <!-- Metis Menu Plugin JavaScript -->
-    <script src="dist/js/bootstrap-select.js"></script>
-    <script src="vendor/metisMenu/metisMenu.min.js"></script>
+    <!-- <script src="dist/js/bootstrap-select.js"></script>
+    <script src="vendor/metisMenu/metisMenu.min.js"></script> -->
     <!-- Morris Charts JavaScript -->
     <!-- <script src="vendor/raphael/raphael.min.js"></script>
     <script src="vendor/morrisjs/morris.min.js"></script>
     <script src="data/morris-data.js"></script> -->
     <!-- Custom Theme JavaScript -->
-    <script src="dist/js/sb-admin-2.js"></script>
+    <!-- <script src="dist/js/sb-admin-2.js"></script> -->
     <!-- DataTables JavaScript -->
-    <script src="vendor/datatables/js/jquery.dataTables.min.js"></script>
+    <!-- <script src="vendor/datatables/js/jquery.dataTables.min.js"></script>
     <script src="vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
     <script src="vendor/datatables-responsive/dataTables.responsive.js"></script>
     <script type="text/javascript" src="js/bootstrap-datepicker.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-datepicker.es.min.js"></script>
     <script src="js/bootstrap-tooltip.js"></script>
     <script src="js/jquery.toaster.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
+    <script src="js/dragula.min.js"></script> -->
+    <!-- <script src="js/busqueda.js"></script> -->
+    <!-- <script src="js/moment-with-locales.js"></script> -->
     <!--<script src="js/jspdf.debug.js"></script>-->
+    <script src="js/plugins.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/4.1.3/firebase.js"></script>
     <script>
       // Initialize Firebase
       var config = {
@@ -300,10 +409,7 @@
       };
       firebase.initializeApp(config);
     </script>
-    <!--<script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/$VERSION/dragula.min.js'></script>-->
-    <script src="js/dragula.min.js"></script>
-    <script src="js/busqueda.js"></script>
-    <script src="js/moment-with-locales.js"></script>
     <script src="js/panel.js"></script>
+    <script src="js/perfil.js"></script>
   </body>
 </html>

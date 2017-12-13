@@ -36,13 +36,9 @@ haySesion();
 
 function mostrarDatos() {
   let idPedido = getQueryVariable('id');
-  let pedidoRef = db.ref('pedidoEntrada/'+idPedido);
+  let pedidoRef = db.ref('ordenesCompra/'+idPedido);
   pedidoRef.on('value', function(snapshot) {
     let datos = snapshot.val();
-
-    if(datos.numOrden != "") {
-      $('#contenedorDatos').prepend(`<p id="numOrden" class="lead"><small>Núm. de orden: <strong>${datos.encabezado.numOrden}</strong></small></p>`);
-    }
 
     $('#numPedido').html("Pedido: " + idPedido);
     let diaCaptura = datos.encabezado.fechaCaptura.substr(0,2);
@@ -76,7 +72,7 @@ function mostrarDatos() {
                 <td class="text-center">${datosProducto.unidad}</td>
                 <td class="text-center"><button class="btn btn-warning btn-xs" onclick="abrirModalEditarProducto('${producto}', '${datosProducto.clave}')"><i class="glyphicon glyphicon-pencil" aria-hidden="true"></i></button></td>
                 <td class="text-center"><button class="btn btn-danger btn-xs" onclick="abrirModalEliminarProducto('${producto}', '${datosProducto.clave}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
-              </tr>`;
+              </tr>`
     }
     trs += `<tr>
               <td></td>
@@ -103,8 +99,8 @@ function abrirModal() {
 
 function llenarSelectProductos() {
   let idPedido = getQueryVariable('id');
-  let pedidoEntradaRef = db.ref(`pedidoEntrada/${idPedido}`);
-  pedidoEntradaRef.on('value', function(snapshot) {
+  let ordenesCompraRef = db.ref(`ordenesCompra/${idPedido}`);
+  ordenesCompraRef.on('value', function(snapshot) {
     let consorcio = snapshot.val().encabezado.consorcio;
 
     let productosRef = db.ref('productos/'+consorcio);
@@ -124,8 +120,8 @@ $('#listaProductos').change(function() {
 
   if(idProducto != undefined) {
     let idPedido = getQueryVariable('id');
-    let pedidoEntradaRef = db.ref(`pedidoEntrada/${idPedido}`);
-    pedidoEntradaRef.on('value', function(snapshot) {
+    let ordenesCompraRef = db.ref(`ordenesCompra/${idPedido}`);
+    ordenesCompraRef.on('value', function(snapshot) {
       let consorcio = snapshot.val().encabezado.consorcio;
 
       let productoActualRef = db.ref('productos/'+consorcio+'/'+idProducto);
@@ -242,17 +238,19 @@ function agregarProducto() {
     let claves = [];
 
     let $filas = $('#tbodyProductos').children('tr'); //arreglo de hijos (filas)
+
     $filas.each(function () {
       let clave = $(this)[0].cells[0].innerHTML;
       claves.push(clave);
     });
 
     if(claves.includes(claveProducto)) {
-      $.toaster({priority: 'warning', title: 'Mensaje de información', message: `El producto ${claveProducto} ya se encuentra en el pedido`});
+      $.toaster({priority: 'warning', title: 'Mensaje de información', message: `El producto ${clave} ya se encuentra en el pedido`});
     }
     else {
-      let pedidoEntradaRef = db.ref(`pedidoEntrada/${idPedido}/detalle`);
-      pedidoEntradaRef.push(datosProducto);
+      let ordenesCompraRef = db.ref(`ordenesCompra/${idPedido}/detalle`);
+      ordenesCompraRef.push(datosProducto);
+
       $.toaster({priority: 'success', title: 'Mensaje de información', message: `Se agregó el producto ${claveProducto} al pedido`});
 
       $('#listaProductos').val('');
@@ -292,7 +290,7 @@ function agregarProducto() {
 
 function abrirModalEditarProducto(idProducto, claveProducto) {
   let idPedido = getQueryVariable('id');
-  let pedidoRef = db.ref(`pedidoEntrada/${idPedido}`);
+  let pedidoRef = db.ref(`ordenesCompra/${idPedido}`);
   pedidoRef.once('value', function(snapshot) {
     let consorcio = snapshot.val().encabezado.consorcio;
 
@@ -300,7 +298,7 @@ function abrirModalEditarProducto(idProducto, claveProducto) {
     empaqueRef.once('value', function(snapshot) {
       let empaque = snapshot.val().empaque;
 
-      let productoRef = db.ref(`pedidoEntrada/${idPedido}/detalle/${idProducto}`);
+      let productoRef = db.ref(`ordenesCompra/${idPedido}/detalle/${idProducto}`);
       productoRef.once('value', function(snapshot) {
         let producto = snapshot.val();
 
@@ -373,7 +371,7 @@ $('#cambioFisicoEditar').keyup(function(){
 
 function editarProducto(idProducto) {
   let idPedido = getQueryVariable('id');
-  let productoRef = db.ref(`pedidoEntrada/${idPedido}/detalle/${idProducto}`);
+  let productoRef = db.ref(`ordenesCompra/${idPedido}/detalle/${idProducto}`);
 
   let pedidoPz = Number($('#pedidoPzEditar').val());
   let degusPz = Number($('#degusPzEditar').val());
@@ -409,7 +407,7 @@ function abrirModalEliminarProducto(idProducto, claveProducto) {
 function eliminarProducto(idProducto, claveProducto) {
   let idPedido = getQueryVariable('id');
 
-  db.ref(`pedidoEntrada/${idPedido}/detalle`).child(idProducto).remove();
+  db.ref(`ordenesCompra/${idPedido}/detalle`).child(idProducto).remove();
   $.toaster({priority: 'success', title: 'Mensaje de información', message: `El producto ${claveProducto} fue eliminado con exito de este pedido`});
 }
 
@@ -475,6 +473,12 @@ $('#campana').click(function() {
 $(document).ready(function() {
   mostrarDatos();
   $('[data-toggle="tooltip"]').tooltip();
+
+  $.toaster({
+    settings: {
+      'timeout': 3000
+    }
+  });
 });
 
 function generarPDF(){
