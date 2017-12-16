@@ -1,3 +1,17 @@
+"use strict";
+var $ = require('jquery');
+
+// Initialize Firebase
+var config = {
+  apiKey: "AIzaSyA19j6-VLNcXLJfBkfd_lZfFFbzg6z0Imc",
+  authDomain: "xico-netcontrol.firebaseapp.com",
+  databaseURL: "https://xico-netcontrol.firebaseio.com",
+  projectId: "xico-netcontrol",
+  storageBucket: "xico-netcontrol.appspot.com",
+  messagingSenderId: "248615705793"
+};
+firebase.initializeApp(config);
+
 const db = firebase.database();
 const auth = firebase.auth();
 
@@ -37,7 +51,7 @@ $('#pestañaOrdenesCompra').on('shown.bs.tab', function (e) {
 });
 
 function mostrarOrdenesCompra() {
-  let tabla = $(`#tablaOrdenesCompra`).DataTable({
+  let hola = $(`#tablaOrdenesCompra`).DataTable({
     "oLanguage": { "sSearch": '<i style="color: #4388E5;" class="glyphicon glyphicon-search"></i>' },
     destroy: true,
     "language": {
