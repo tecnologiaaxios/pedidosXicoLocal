@@ -36,7 +36,7 @@ gulp.task('pluginsjs', function() {
     'babel/panel.js',
     'babel/perfil.js'
   ])
-    .pipe(concat('plugins.min.js'))
+    .pipe(concat('panel.min.js'))
     .pipe(uglify().on('error', function(e){
       console.log(e);
     }))
