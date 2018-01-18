@@ -346,7 +346,6 @@ function mostrarPedidosEnProceso() {
 }
 
 function abrirModalFinalizarPedidoPadre(idPedidoPadre) {
-  console.log("Hola");
   $('#modalFinalizarPedidoPadre').modal('show');
   $('#btnFinalizarPedidoPadre').attr('onclick', "finalizarPedidoPadre('" + idPedidoPadre + "'");
 }
