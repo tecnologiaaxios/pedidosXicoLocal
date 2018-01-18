@@ -19,6 +19,7 @@ gulp.task('es6', function() {
 gulp.task('pluginsjs', function() {
   gulp.src([
     // 'js/jquery-3.2.1.min.js',
+    'js/jquery-ui.js',
     'vendor/bootstrap/js/bootstrap.min.js',
     'dist/js/bootstrap-select.js',
     'vendor/metisMenu/metisMenu.min.js',

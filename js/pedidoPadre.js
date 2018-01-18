@@ -76,8 +76,47 @@ $('#tipoPedido').change(function () {
   mostrarUna(tienda);
 });
 
-function mostrarTodas() {
+$('#aPedidosChecados').on('shown.bs.tab', function (e) {
+  $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+});
 
+function mostrarPedidosChecados() {
+  let tabla = $(`#pedidosChecados`).DataTable({
+    destroy: true,
+    "lengthChange": false,
+    "scrollY": "200px",
+    "scrollCollapse": true,
+    "language": {
+      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
+    },
+    "ordering": false
+  });
+  let idPedidoPadre = getQueryVariable('id');
+  let rutaPedidos = db.ref(`pedidoPadre/${idPedidoPadre}`);
+  rutaPedidos.on('value', function(snapshot) {
+    let pedidosHijos = snapshot.val().pedidosHijos;
+
+    let filas = '';
+    tabla.clear();
+  
+    for(let pedidoHijo in pedidosHijos) {
+      if(pedidosHijos[pedidoHijo].encabezado.checado == true) {
+        filas += `<tr>
+                    <td>${pedidoHijo}</td>
+                    <td>${pedidosHijos[pedidoHijo].encabezado.tienda}</td>
+                    <td>${pedidosHijos[pedidoHijo].encabezado.cantidadProductos}</td>
+                    <td>${pedidosHijos[pedidoHijo].encabezado.totalKilos}</td>
+                    <td>${pedidosHijos[pedidoHijo].encabezado.totalPiezas}</td>
+                  </tr>`;
+      }
+    }
+
+    //$('#pedidosChecados tbody').html(filas);
+    tabla.rows.add($(filas)).columns.adjust().draw();
+  });
+}
+
+function mostrarTodas() {
   $('#tableinfo').hide();
   let idPedidoPadre = getQueryVariable('id');
   let tiendasRef = db.ref('pedidoPadre/'+idPedidoPadre+'/productos');
@@ -88,6 +127,7 @@ function mostrarTodas() {
 
     let TotalPz, TotalKg;
     let TotalPzs = 0, TotalKgs = 0, TotalPrecUni = 0, TotalImporte = 0;
+
     for(producto in productos) {
       let importe = 0;
       if(productos[producto].unidad == "PZA") {
@@ -222,6 +262,7 @@ $(document).ready(function() {
   mostrarTodas();
   //$('#Imprimir').attr('disabled', true);
   mostrarDatos();
+  mostrarPedidosChecados();
   $('.loader').hide();
   $('#panel').show();
 });

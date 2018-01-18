@@ -40,7 +40,7 @@ function mostrarDatos() {
   pedidoRef.on('value', function(snapshot) {
     let datos = snapshot.val();
 
-    if(datos.numOrden != "") {
+    if(datos.encabezado.numOrden != "" && datos.encabezado.numOrden != undefined) {
       $('#contenedorDatos').prepend(`<p id="numOrden" class="lead"><small>Núm. de orden: <strong>${datos.encabezado.numOrden}</strong></small></p>`);
     }
 
@@ -54,8 +54,10 @@ function mostrarDatos() {
     $('#fechaPedido').html("Recibido el "+fechaCapturaMostrar);
     $('#tienda').html('Tienda: ' + datos.encabezado.tienda);
     let detalle = datos.detalle;
-    $('#cantidad').html('<small class="lead">'+Object.keys(detalle).length+'</small>');
+    let cantidadProductos = datos.encabezado.cantidadProductos;
+    $('#cantidad').html(`<small class="lead">${cantidadProductos}</small>`);
     let trs = "", kgTotal = 0, degusTotal = 0, pedidoPzTotal = 0, piezaTotal = 0, precioUnitarioTotal = 0, cambioFisicoTotal = 0;
+    
     for(let producto in detalle) {
       let datosProducto = detalle[producto];
       kgTotal += datosProducto.totalKg;

@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link href='logo.ico' rel='shortcut icon' type='image/x-icon'/>
     <title>Recepción de pedidos</title>
-
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
     <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap-theme.min.css">
     <link href="vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
@@ -83,6 +83,12 @@
             <a style="color:white; text-decoration: none;" href="tickets.html">
               <span style="font-size:35px;" class="material-icons no-padding">receipt</span>
               <p style="white; font-size:11px; width:200px; margin-left:-14px; margin-top:-15px;">Revisar tickets</p>
+            </a>
+          </li>
+          <li>
+            <a style="color:white; text-decoration: none;" href="agentes.html">
+              <span style="font-size:35px;" class="material-icons no-padding">group</span>
+              <p style="white; font-size:11px; width:200px; margin-left:-14px; margin-top:-15px;">Ver agentes</p>
             </a>
           </li>
         </ul>
@@ -167,13 +173,13 @@
                           <tbody id="tbodyTablaPedidoPadre" style="border: 2px solid grey; border-style: dashed; height:200px; width:100%;"  class="tabla-drag">
                             <h4>Arrastra los pedidos dentro de las líneas punteadas para agruparlos</h4>
                             <tr id="vacio" style="padding:0px 0px 0px;" class="no-pading">
-                              <td scope="row" style="border:none;"></td>
                               <td></td>
                               <td></td>
                               <td></td>
                               <td></td>
-                              <td class="no-padding"></td>
-                              <td class="no-padding"> </td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
                               <td></td>
                             </tr>
                           </tbody>
@@ -198,11 +204,14 @@
                           <th>Clave</th>
                           <th>Fecha de captura</th>
                           <th>Fecha ruta</th>
-                          <th class="text-center">Modificar fecha ruta</th>
+                          <!--<th class="text-center">Modificar fecha ruta</th>-->
                           <th>Ruta</th>
-                          <th class="text-center">Modificar ruta</th>
+                          <!--<th class="text-center">Modificar ruta</th>-->
+                          <th class="text-center">Modificar</th>
                           <th class="text-center">Estado</th>
                           <th class="text-center">Detalles</th>
+                          <th class="text-center">Verificar</th>
+                          <th class="text-center">Finalizar</th>
                         </tr>
                       </thead>
                       <tbody id="tbodyTablaPedidos">
@@ -237,6 +246,39 @@
               </div>
             </div>
           </div>
+          <div id="modalModificarRuta" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Modificar datos</h4>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="fechaRuta">Fecha ruta:</label>
+                        <div class="input-group date">
+                          <input id="fechaRuta" class="form-control input-sm" type="text" placeholder="Fecha de ruta">
+                          <span style="color: white;" class="input-group-addon btn-primary btn-sm"><i class="fa fa-calendar"></i></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="ruta">Ruta:</label>
+                        <input class="form-control" placeholder="Ruta" type="text" name="ruta" id="ruta">
+                      </div>
+                    </div>
+                  </div>               
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                  <button id="btnGuardarRuta" type="button" class="btn btn-success">Guardar</button>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
           <div id="modalConfirmarEliminarPedido" class="modal fade" tabindex="-1" role="dialog">
             <div class="modal-dialog" role="document">
               <div class="modal-content">
@@ -351,11 +393,45 @@
               </div>
             </div>
           </div>
+          <div id="modalFinalizarPedidoPadre" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Finalizar pedido</h4>
+                </div>
+                <div class="modal-body">
+                  <p>¿Estás seguro que deseas finalizar el pedido?</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                  <button id="btnFinalizarPedidoPadre" type="button" class="btn btn-primary">Sí</button>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
         </div>
       </div>
     </div>
     <script src="./node_modules/jquery/dist/jquery.min.js"></script>
     <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
     <script src="js/panel.min.js"></script><!--Todos los javascript están concatenados y minificados en este archivo-->
+
+    <!-- <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="dist/js/bootstrap-select.js"></script>
+    <script src="vendor/metisMenu/metisMenu.min.js"></script>
+    <script src="dist/js/sb-admin-2.js"></script>
+    <script src="vendor/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+    <script src="vendor/datatables-responsive/dataTables.responsive.js"></script>
+    <script src="js/bootstrap-datepicker.min.js"></script>
+    <script src="js/bootstrap-datepicker.es.min.js"></script>
+    <script src="js/bootstrap-tooltip.js"></script>
+    <script src="js/jquery.toaster.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/dragula.min.js"></script>
+    <script src="js/moment-with-locales.js"></script>
+    <script src="js/panel.js"></script>
+    <script src="js/perfil.js"></script> -->
   </body>
 </html>

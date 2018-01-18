@@ -114,7 +114,6 @@ function mostrarPedidos() {
       "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json",
       "searchPlaceholder": "Buscar"
     },
-
     "ordering": false
   });
 
@@ -137,7 +136,8 @@ function mostrarPedidos() {
       var estado = "";
       switch (arreglo[_pedido2].encabezado.estado) {
         case "Pendiente":
-          estado = "<td class=\"no-padding text-center\"><i style=\"color:#d50000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;\" class=\"material-icons center\">fiber_manual_record</i></td>";
+          //estado = `<td class="no-padding text-center"><i style="color:#d50000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
+          estado = "<td class=\"no-padding text-center\"><span style=\"background-color:#d50000; color:#FFFFFF;\" class=\"badge\">Pendiente</span></td>";
           break;
         case "En proceso":
           estado = "<td class=\"no-padding text-center\"><i style=\"color:#FF8000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;\" class=\"material-icons center\">fiber_manual_record</i></td>";
@@ -154,7 +154,7 @@ function mostrarPedidos() {
       moment.locale('es');
       var fechaCapturaMostrar = moment(fechaCaptura).format('LL');
 
-      filas += "<tr style=\"padding:0px 0px 0px;\" class=\"no-pading\">\n                  <td>" + arregloID[_pedido2] + "</td>\n                  <td>" + arreglo[_pedido2].encabezado.numOrden + "</td>\n                  <td>" + fechaCapturaMostrar + "</td>\n                  <td>" + arreglo[_pedido2].encabezado.tienda + "</td>\n                  <td>" + arreglo[_pedido2].encabezado.ruta + "</td>\n                  <td class=\"no-padding text-center\"><a href=\"pedido.html?id=" + arregloID[_pedido2] + "\" class=\"btn btn-default btn-sm\"><span style=\"padding-bottom:0px;\" class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</a></td>\n                  " + estado + "\n                  <td class=\"text-center\"><button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=\"abrirModalEliminarPedido('" + arregloID[_pedido2] + "')\"><i class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></i></button></td>\n                </tr>";
+      filas += "<tr style=\"padding:0px 0px 0px;\" class=\"no-pading\">\n                  <td>" + arregloID[_pedido2] + "</td>\n                  <td>" + (arreglo[_pedido2].encabezado.numOrden != undefined ? arreglo[_pedido2].encabezado.numOrden : "") + "</td>\n                  <td>" + fechaCapturaMostrar + "</td>\n                  <td>" + arreglo[_pedido2].encabezado.tienda + "</td>\n                  <td>" + arreglo[_pedido2].encabezado.ruta + "</td>\n                  <td class=\"no-padding text-center\"><a href=\"pedido.html?id=" + arregloID[_pedido2] + "\" class=\"btn btn-default btn-sm\"><span class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</a></td>\n                  " + estado + "\n                  <td class=\"text-center\"><button type=\"button\" class=\"btn btn-danger btn-sm\" onclick=\"abrirModalEliminarPedido('" + arregloID[_pedido2] + "')\"><i class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></i></button></td>\n                </tr>";
     }
 
     $('#loaderPedidos').remove();
@@ -233,17 +233,18 @@ function mostrarHistorialPedidos() {
 }
 
 function guardarFechaRuta(idPedidoPadre) {
-  var pedidoPadreRef = db.ref('pedidoPadre/');
+  var pedidoPadreRef = db.ref("pedidoPadre/" + idPedidoPadre);
   var nuevaFechaRuta = $("#fechaRuta-" + idPedidoPadre).val();
-  pedidoPadreRef.child(idPedidoPadre).update({
+  pedidoPadreRef.update({
     fechaRuta: nuevaFechaRuta
   });
 }
 
 function guardarRuta(idPedidoPadre) {
-  var pedidoPadreRef = db.ref('pedidoPadre/');
+  var pedidoPadreRef = db.ref("pedidoPadre/" + idPedidoPadre);
   var nuevaRuta = $("#ruta-" + idPedidoPadre).val();
-  pedidoPadreRef.child(idPedidoPadre).update({
+  console.log(idPedidoPadre);
+  pedidoPadreRef.update({
     ruta: nuevaRuta
   });
 }
@@ -268,34 +269,67 @@ function mostrarPedidosEnProceso() {
     }
     var filas = "";
     tabla.clear();
-    for (pedidoPadre in pedidosPadre) {
-      var diaCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(0, 2);
-      var mesCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(3, 2);
-      var añoCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(6, 4);
-      var fechaCaptura = mesCaptura + "/" + diaCaptura + "/" + añoCaptura;
-      moment.locale('es');
+    for (var pedidoPadre in pedidosPadre) {
+      if (pedidosPadre[pedidoPadre].estado == "En proceso") {
+        var diaCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(0, 2);
+        var mesCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(3, 2);
+        var añoCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(6, 4);
+        var fechaCaptura = mesCaptura + "/" + diaCaptura + "/" + añoCaptura;
+        moment.locale('es');
 
-      var fechaCapturaMostrar = moment(fechaCaptura).format('LL');
+        var fechaCapturaMostrar = moment(fechaCaptura).format('LL');
 
-      var fechaRutaMostrar = void 0;
-      var rutaMostrar = void 0;
-      if (pedidosPadre[pedidoPadre].fechaRuta.length > 0) {
-        var diaRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(0, 2);
-        var mesRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(3, 2);
-        var añoRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(6, 4);
-        var fechaRuta = mesRuta + "/" + diaRuta + "/" + añoRuta;
+        var fechaRutaMostrar = void 0;
+        var rutaMostrar = void 0;
+        if (pedidosPadre[pedidoPadre].fechaRuta.length > 0) {
+          var diaRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(0, 2);
+          var mesRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(3, 2);
+          var añoRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(6, 4);
+          var fechaRuta = mesRuta + "/" + diaRuta + "/" + añoRuta;
 
-        fechaRutaMostrar = moment(fechaRuta).format('LL');
-      } else {
-        fechaRutaMostrar = "Fecha pendiente";
+          fechaRutaMostrar = moment(fechaRuta).format('LL');
+        } else {
+          fechaRutaMostrar = "Fecha pendiente";
+        }
+        if (pedidosPadre[pedidoPadre].ruta.length == 0) {
+          rutaMostrar = "Ruta pendiente";
+        } else {
+          rutaMostrar = pedidosPadre[pedidoPadre].ruta;
+        }
+
+        filas += "<tr>\n                    <td>" + pedidosPadre[pedidoPadre].clave + "</td>\n                    <td>" + fechaCapturaMostrar + "</td>\n                    <td>" + fechaRutaMostrar + "</td>\n                    <td>" + rutaMostrar + "</td>\n                    <td class=\"text-center\"><button onclick=\"abrirModalModificarRuta('" + pedidoPadre + "')\" class=\"btn btn-warning btn-sm\"><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\"></i></button></td>\n                    <td class=\"text-center\">\n                      <span style=\"background-color:#FFCC25; color:#000000;\" class=\"badge\">En proceso</span>\n                    </td>\n                    <td class=\"text-center\"><a class=\"btn btn-default btn-sm\" href=\"pedidoPadre.html?id=" + pedidoPadre + "\"><span class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</a></td>\n                    <td class=\"text-center\"><button class=\"btn btn-primary btn-sm\">Verificar</button></td>\n                    <td class=\"text-center\"><button class=\"btn btn-success btn-sm\" onclick=\"abrirModalFinalizarPedidoPadre('" + pedidoPadre + "')\"><i class=\"fa fa-check\" aria-hidden=\"true\"></i></button></td>\n                  </tr>";
+
+        /*filas += `<tr>
+                    <td>${pedidosPadre[pedidoPadre].clave}</td>
+                    <td>${fechaCapturaMostrar}</td>
+                    <td>${fechaRutaMostrar}</td>
+                    <!--<td class="text-center">
+                      <form class="form-inline">
+                        <div class="form-group">
+                          <div class="input-group date" style="width: 200px;">
+                            <input class="form-control input-sm" type="text" placeholder="Fecha de ruta" id="fechaRuta-${pedidoPadre}">
+                            <span style="color: white;" class="input-group-addon btn-primary btn-sm"><i class="fa fa-calendar"></i></span>
+                          </div>
+                        </div>
+                        <button class="btn btn-success btn-sm" type="button" onclick="guardarFechaRuta('${pedidoPadre}')"><i class="fa fa-floppy-o" aria-hidden="true"></i></button>
+                      </form>
+                    </td>-->
+                    <td>${rutaMostrar}</td>
+                    <!--<td class="text-center">
+                      <div class="form-group">
+                        <div class="input-group" style="width: 200px;">
+                          <input class="form-control input-sm" type="text" style="" placeholder="Ruta" id="ruta-${pedidoPadre}"/>
+                          <span class="input-group-btn"><button class="btn btn-success btn-sm" onclick="guardarRuta(${pedidoPadre})"><i class="fa fa-floppy-o" aria-hidden="true"></i></button></span>
+                        </div>
+                      </div>
+                    </td>-->
+                    <td class="text-center"><button onclick="abrirModalModificarRuta('${pedidoPadre}')" class="btn btn-warning btn-sm">Modificar</button></td>
+                    <td class="text-center">
+                      <i style="color:#FFCC25; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i>
+                    </td>
+                    <td class="text-center"><a class="btn btn-default btn-sm" href="pedidoPadre.html?id=${pedidoPadre}"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
+                  </tr>`;*/
       }
-      if (pedidosPadre[pedidoPadre].ruta.length == 0) {
-        rutaMostrar = "Ruta pendiente";
-      } else {
-        rutaMostrar = pedidosPadre[pedidoPadre].ruta;
-      }
-
-      filas += "<tr>\n                  <td>" + pedidosPadre[pedidoPadre].clave + "</td>\n                  <td>" + fechaCapturaMostrar + "</td>\n                  <td>" + fechaRutaMostrar + "</td>\n                  <td class=\"text-center\">\n                    <form class=\"form-inline\">\n                      <div class=\"form-group\">\n                        <div class=\"input-group date\" style=\"width: 200px;\">\n                          <input class=\"form-control\" type=\"text\" placeholder=\"Fecha de ruta\" id=\"fechaRuta-" + pedidoPadre + "\">\n                          <span style=\"color: white;\" class=\"input-group-addon btn-primary\"><i class=\"fa fa-calendar\"></i></span>\n                        </div>\n                      </div>\n                      <button class=\"btn btn-success\" type=\"button\" onclick=\"guardarFechaRuta('" + pedidoPadre + "')\"><i class=\"fa fa-floppy-o\" aria-hidden=\"true\"></i></button>\n                    </form>\n                  </td>\n                  <td>" + rutaMostrar + "</td>\n                  <td class=\"text-center\">\n                    <div class=\"form-group\">\n                      <div class=\"input-group\" style=\"width: 200px;\">\n                        <input class=\"form-control\" type=\"text\" style=\"\" placeholder=\"Ruta\" id=\"ruta-" + pedidoPadre + "\"/>\n                        <span class=\"input-group-btn\"><button class=\"btn btn-success\" onclick=\"guardarRuta(" + pedidoPadre + ")\"><i class=\"fa fa-floppy-o\" aria-hidden=\"true\"></i></button></span>\n                      </div>\n                    </div>\n                  </td>\n                  <td class=\"text-center\">\n                    <i style=\"color:#FFCC25; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;\" class=\"material-icons center\">fiber_manual_record</i>\n                  </td>\n                  <td class=\"text-center\"><a class=\"btn btn-info\" href=\"pedidoPadre.html?id=" + pedidoPadre + "\">Ver m\xE1s</a></td>\n                </tr>";
     }
     $('#pPedidosProceso').remove();
     $('#loaderPedidosEnProceso').remove();
@@ -309,6 +343,43 @@ function mostrarPedidosEnProceso() {
       language: "es"
     });
   });
+}
+
+function abrirModalFinalizarPedidoPadre(idPedidoPadre) {
+  console.log("Hola");
+  $('#modalFinalizarPedidoPadre').modal('show');
+  $('#btnFinalizarPedidoPadre').attr('onclick', "finalizarPedidoPadre('" + idPedidoPadre + "'");
+}
+
+function finalizarPedidoPadre(idPedidoPadre) {
+  var rutaPedidoPadre = db.ref("pedidoPadre/" + idPedidoPadre);
+  rutaPedidoPadre.update({
+    estado: "Finalizado"
+  });
+}
+
+function abrirModalModificarRuta(idPedidoPadre) {
+  var rutaPedidosPadre = db.ref("pedidoPadre/" + idPedidoPadre);
+  rutaPedidosPadre.once('value', function (snapshot) {
+    $('#fechaRuta').val(snapshot.val().fechaRuta);
+    $('#ruta').val(snapshot.val().ruta);
+
+    $('#modalModificarRuta').modal('show');
+    $('#btnGuardarRuta').attr('onclick', "guardarDatos('" + idPedidoPadre + "')");
+  });
+}
+
+function guardarDatos(idPedidoPadre) {
+  var fechaRuta = $('#fechaRuta').val();
+  var ruta = $('#ruta').val();
+
+  var rutaPedidosPadre = db.ref("pedidoPadre/" + idPedidoPadre);
+  rutaPedidosPadre.update({
+    fechaRuta: fechaRuta,
+    ruta: ruta
+  });
+
+  $('#modalModificarRuta').modal('hide');
 }
 
 dragula([document.getElementById('tbodyTablaPedidos'), document.getElementById('tbodyTablaPedidoPadre')]);
@@ -443,7 +514,7 @@ function generarPedidoPadre() {
         pedidoPadreRefKey.set(datosPedidosHijos);
         historialPedidosEntradaRef.push(datosPedidosHijos);
 
-        var row = "<tr id=\"vacio\" style=\"padding:0px 0px 0px;\" class=\"no-pading\">\n                  <td scope=\"row\" style=\"border:none;\"></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td class=\"no-padding\"></td>\n                  <td class=\"no-padding\"></td>\n                </tr>";
+        var row = "<tr id=\"vacio\" style=\"padding:0px 0px 0px;\" class=\"no-pading\">\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                </tr>";
         $('#tbodyTablaPedidoPadre').empty().append(row);
 
         var _loop2 = function _loop2(_promotora) {
@@ -552,13 +623,24 @@ function generarPedidoPadre() {
 }
 
 function cancelarPedidoPadre() {
-  var filas = $('#tablaPedidoPadre tbody tr');
-
-  filas.each(function (i) {
+  /*let filas = $('#tablaPedidoPadre tbody tr');
+   filas.each(function (i) {
     $('#tablaPedidos tbody').append(filas[i]);
     $('#tablaPedidoPadre tbody').remove(filas[i]);
-    $('#tablaPedidoPadre tbody').append('<tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>');
-  });
+    $('#tablaPedidoPadre tbody')
+      .append(`<tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>`);
+  });*/
+  $('#tablaPedidoPadre tbody').empty().append("<tr>\n              <td></td>\n              <td></td>\n              <td></td>\n              <td></td>\n              <td></td>\n              <td></td>\n              <td></td>\n              <td></td>\n            </tr>");
+  mostrarPedidos();
 }
 
 function pedidosRecibidos() {
