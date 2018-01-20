@@ -55,25 +55,33 @@ function llenarSelectTiendas() {
 
   tiendasRef.on('value', function(snapshot) {
     let pedidosHijos = snapshot.val();
-    let row = "";
+    let options = `<option value="Todas">Todas las tiendas</option>`;
+    let optionsChecado = "";
     for(pedidoHijo in pedidosHijos) {
-      /*let option = $('<option/>', {
-        'value': pedidoHijo,
-        'data-content': '<img src="'+imagen+'">',
-        text: pedidosHijos[pedidoHijo].encabezado.tienda
-      });*/
-      row += '<option value="'+pedidoHijo+'">'+pedidosHijos[pedidoHijo].encabezado.tienda+'</option>';
+      options += `<option value="${pedidoHijo}">${pedidosHijos[pedidoHijo].encabezado.tienda}</option>`;
+      optionsChecado += `<option value="${pedidoHijo}">${pedidosHijos[pedidoHijo].encabezado.tienda}</option>`;
     }
 
-    $('#tiendas').empty().append('<option value="Todas">Todas las tiendas</option>').append(row);
+    $('#tiendas').html(options);
+    $('#tiendasChecado').html(optionsChecado);
   });
 }
 
 llenarSelectTiendas();
 
+$('#tiendasChecado').change(function() {
+  let tiendaChecada = $(this).val();
+  mostrarUnaChecada(tiendaChecada);
+});
+
 $('#tipoPedido').change(function () {
   let tienda = $('#tiendas').val();
   mostrarUna(tienda);
+});
+
+$('#tipoPedidoChecado').change(function () {
+  let tiendaChecado = $('#tiendasChecado').val();
+  mostrarUnaChecada(tiendaChecado);
 });
 
 $('#aPedidosChecados').on('shown.bs.tab', function (e) {
@@ -258,11 +266,77 @@ function mostrarUna(idPedidoHijo) {
   });
 }
 
+function mostrarUnaChecada(idPedidoHijo) {
+  let idPedidoPadre = getQueryVariable('id');
+  let tipoPedido = $('#tipoPedidoChecado').val();
+  
+  let pedidoHijoRef = db.ref(`pedidoPadre/${idPedidoPadre}/pedidosHijos/${idPedidoHijo}`);
+  pedidoHijoRef.on('value', function(snapshot) {
+    let pedidoHijo = snapshot.val(),
+        detalles = pedidoHijo.detalle,
+        encabezado = pedidoHijo.encabezado,
+        tienda = encabezado.tienda,
+        filas = "",
+        totalPiezas = 0, totalKilos = 0, totalPzEnt = 0, totalKgEnt = 0;
+
+    let cantidadPiezas,
+        cantidadKg,
+        cantidadPzEnt,
+        cantidadKgEnt;
+    for(let producto in detalles) {
+      let prod = detalles[producto];
+      switch(tipoPedido) {
+        case 'cambioFisico':
+          cantidadPiezas = prod.cambioFisicoPz;
+          cantidadKg = prod.cambioFisicoKg;
+          cantidadPzEnt = (prod.cambioFisicoPzEnt != undefined) ? prod.cambioFisicoPzEnt : 0;
+          cantidadKgEnt = (prod.cambioFisicoKgEnt != undefined) ? prod.cambioFisicoKgEnt : 0;
+          break;
+        case 'degusPz':
+          cantidadPiezas = prod.degusPz;
+          cantidadKg = prod.degusKg;
+          cantidadPzEnt = (prod.degusPzEnt != undefined) ? prod.degusPzEnt : 0;
+          cantidadKgEnt = (prod.degusKgEnt != undefined) ? prod.degusKgEnt : 0;
+          break;
+        case 'pedidoPz':
+          cantidadPiezas = prod.pedidoPz;
+          cantidadKg = prod.pedidoKg;
+          cantidadPzEnt = (prod.pedidoPzEnt != undefined) ? prod.pedidoPzEnt : 0;
+          cantidadKgEnt = (prod.pedidoKgEnt != undefined) ? prod.pedidoKgEnt : 0;
+          break;
+      }
+      totalPiezas += cantidadPiezas;
+      totalKilos += cantidadKg;
+      totalPzEnt += cantidadPzEnt;
+      totalKgEnt += cantidadKgEnt;
+
+      filas += `<tr>
+                  <td>${prod.clave}</td>
+                  <td>${prod.nombre}</td>
+                  <td>${cantidadPiezas}</td>
+                  <td>${cantidadKg.toFixed(2)}</td>
+                  <td>${cantidadPzEnt}</td>
+                  <td>${cantidadKgEnt.toFixed(2)}</td>
+                </tr>`;
+    }
+
+    filas += `<tr>
+              <td></td>
+              <td><strong>Total general</strong></td>
+              <td><strong>${totalPiezas}</strong></td>
+              <td><strong>${totalKilos.toFixed(2)}</strong></td>
+              <td><strong>${totalPzEnt}</strong></td>
+              <td><strong>${totalKgEnt}</strong></td> 
+            </tr>`;
+    $('#tablaPedidosChecados tbody').html(filas);
+  });
+}
+
 $(document).ready(function() {
   mostrarTodas();
   //$('#Imprimir').attr('disabled', true);
   mostrarDatos();
-  mostrarPedidosChecados();
+
   $('.loader').hide();
   $('#panel').show();
   $('[data-toggle="tooltip"]').tooltip();
@@ -279,7 +353,6 @@ $('#tiendas').change(function() {
     mostrarUna(tienda);
     $('#Imprimir').attr('disabled', false);
   }
-
 });
 
 function mostrarNotificaciones() {

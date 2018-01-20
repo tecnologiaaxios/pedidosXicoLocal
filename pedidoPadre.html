@@ -99,14 +99,14 @@
                         <form class="form-inline">
                           <div class="form-group">
                             <span class="glyphicon glyphicon-filter"></span></span>Filtrar por: </span>
-                            <select id="tiendas" class="form-control" id="tienda"></select>
+                            <select id="tiendas" class="form-control"></select>
                           </div>
                           <div class="form-group">
                             <span class="">Tipo de pedido</span>
                             <select name="tipoPedido" id="tipoPedido" class="form-control">
-                              <option value="cambioFisico">Cambio físico</option>
-                              <option value="degusPz">Degustación Pz.</option>
-                              <option value="pedidoPz">Pedido Pz.</option>
+                              <option value="pedidoPz">Pedido</option>
+                              <option value="degusPz">Degustación</option>
+                              <option value="cambioFisico">Cambio físico</option>                
                             </select>
                           </div>
                         </form><br>
@@ -152,21 +152,37 @@
                   <div role="tabpanel" class="tab-pane" id="tabPedidosChecados">
                     <div class="panel panel-default">
                       <div class="panel-body">
-                        <label>Pedidos checados:</label>
-                        <table id="pedidosChecados" class="table table-condensed table-hover table-striped table-bordered">
-                          <thead>
-                            <tr>
-                              <th>Id</th>
-                              <th>Tienda</th>
-                              <th>Cantidad</th>
-                              <th>Kg</th>
-                              <th>Pz</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            
-                          </tbody>
-                        </table>
+                        <form class="form-inline">
+                          <div class="form-group">
+                            <span class="glyphicon glyphicon-filter"></span></span>Filtrar por: </span>
+                            <select id="tiendasChecado" class="form-control"></select>
+                          </div>
+                          <div class="form-group">
+                            <span class="">Tipo de pedido</span>
+                            <select name="tipoPedido" id="tipoPedidoChecado" class="form-control">
+                              <option value="pedidoPz">Pedido</option>
+                              <option value="degusPz">Degustación</option>
+                              <option value="cambioFisico">Cambio físico</option>  
+                            </select>
+                          </div>
+                        </form><br>                 
+                        <div style="" class="table-responsive">
+                          <table id="tablaPedidosChecados" class="table table-condensed table-hover table-striped table-bordered">
+                            <thead>
+                              <tr>
+                                <th>Clave</th>
+                                <th>Descripción</th>
+                                <th>Pz</th>
+                                <th>Kg</th>
+                                <th>Pz Ent.</th>
+                                <th>Kg Ent.</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -180,8 +196,8 @@
       </div><!-- /#page-wrapper -->
     </div><!-- /#wrapper -->
     <!-- jQuery -->
-    <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
-    <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <!--<script src="vendor/bootstrap/js/bootstrap.min.js"></script>-->
     <script src="vendor/metisMenu/metisMenu.min.js"></script>
