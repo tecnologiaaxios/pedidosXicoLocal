@@ -202,6 +202,8 @@ function eliminarOrden(idOrden) {
 function mostrarHistorialPedidos() {
   let tabla = $(`#tablaHistorialPedidos`).DataTable({
     destroy: true,
+    // "scrollY": "300px",
+    // "scrollCollapse": true,
     "language": {
       "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
     },
@@ -228,7 +230,7 @@ function mostrarHistorialPedidos() {
           case "En proceso":
             estado = `<td class="no-padding text-center"><i style="color:#FF8000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
             break;
-          case "Lista":
+          case "Finalizado":
             estado = `<td class="no-padding text-center"><i style="color:#70E707; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
             break;
         }
@@ -246,7 +248,7 @@ function mostrarHistorialPedidos() {
                   <td>${pedidosEntrada[pedido].encabezado.tienda}</td>
                   <td>${pedidosEntrada[pedido].encabezado.ruta}</td>
                   <td class="no-padding text-center"><button type="button" class="btn btn-info btn-sm"><span style="padding-bottom:0px;" class="glyphicon glyphicon-print"></span></button></td>
-                  ${estado}
+                  <!--${estado}-->
                </tr>`;
       }
     }
@@ -381,6 +383,81 @@ function mostrarPedidosEnProceso() {
   });
 }
 
+function mostrarPedidosFinalizados() {
+  let tabla = $(`#tablaPedidosFinalizados`).DataTable({
+    destroy: true,
+    "language": {
+      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
+    },
+    "searching": false,
+    "ordering": false
+  });
+
+  let pedidosPadreRef = db.ref('pedidoPadre');
+  pedidosPadreRef.on('value', function(snapshot) {
+    let loader = $('#loaderPedidosFinalizados');
+    let pedidosPadre = snapshot.val();
+    if(pedidosPadre == null || pedidosPadre == undefined) {
+      loader.remove();
+      $('#pPedidosFinalizados').html('No se encontraron pedidos finalizados');
+    }
+    let filas = "";
+    tabla.clear();
+    for(let pedidoPadre in pedidosPadre) {
+      if(pedidosPadre[pedidoPadre].estado == "Finalizado") {
+        let diaCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(0,2);
+        let mesCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(3,2);
+        let añoCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(6,4);
+        let fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
+        moment.locale('es');
+
+        let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
+
+        let fechaRutaMostrar;
+        let rutaMostrar;
+        if(pedidosPadre[pedidoPadre].fechaRuta.length > 0) {
+          let diaRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(0,2);
+          let mesRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(3,2);
+          let añoRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(6,4);
+          let fechaRuta = `${mesRuta}/${diaRuta}/${añoRuta}`;
+
+          fechaRutaMostrar = moment(fechaRuta).format('LL');
+        } else {
+          fechaRutaMostrar = "Fecha pendiente";
+        }
+        if(pedidosPadre[pedidoPadre].ruta.length == 0) {
+          rutaMostrar = "Ruta pendiente";
+        } else {
+          rutaMostrar = pedidosPadre[pedidoPadre].ruta;
+        }
+
+        filas += `<tr>
+                    <td>${pedidosPadre[pedidoPadre].clave}</td>
+                    <td>${fechaCapturaMostrar}</td>
+                    <td>${fechaRutaMostrar}</td>
+                    <td>${rutaMostrar}</td>
+                    <td class="text-center">${(pedidosPadre[pedidoPadre].agente != undefined) ? '<div class="radioBtn btn-group"><a class="btn btn-sm btn-agente">'+pedidosPadre[pedidoPadre].agente+'</a></div>' : ""}</td>
+                    <td class="text-center">
+                      <span style="background-color:#FFCC25; color:#000000;" class="badge">En proceso</span>
+                    </td>
+                    <td class="text-center"><a class="btn btn-default btn-sm" href="pedidoPadre.html?id=${pedidoPadre}"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
+                  </tr>`;
+      }
+    }
+    $('#pPedidosFinalizados').remove();
+    $('#loaderPedidosFinalizados').remove();
+    $('#tablaPedidosFinalizados').removeClass('hidden');
+    tabla.rows.add($(filas)).columns.adjust().draw();
+
+    $('.input-group.date').datepicker({
+      autoclose: true,
+      format: "dd/mm/yyyy",
+      startDate: "today",
+      language: "es"
+    });
+  });
+}
+
 function abrirModalFinalizarPedidoPadre(idPedidoPadre) {
   $('#modalFinalizarPedidoPadre').modal('show');
   $('#btnFinalizarPedidoPadre').attr('onclick', `finalizarPedidoPadre('${idPedidoPadre}'`);
@@ -404,6 +481,13 @@ function finalizarPedidoPadre(idPedidoPadre) {
   let rutaPedidoPadre = db.ref(`pedidoPadre/${idPedidoPadre}`);
   rutaPedidoPadre.update({
     estado: "Finalizado"
+  });
+}
+
+function verificarPedidoPadre(idPedidoPadre) {
+  let rutaPedidoPadre = db.ref(`pedidoPadre/${idPedidoPadre}`);
+  rutaPedidoPadre.update({
+    verificado: true
   });
 }
  
@@ -536,7 +620,6 @@ function generarPedidoPadre() {
     }
   }
 
-
   let pedidosPadresRef = db.ref('pedidoPadre/');
   pedidosPadresRef.once('value', function(snapshot) {
     let existe = (snapshot.val() != null);
@@ -551,6 +634,7 @@ function generarPedidoPadre() {
           datosPedidoPadre = {
             fechaCreacionPadre: fechaCreacionPadre,
             fechaRuta: "",
+            verificado: false,
             ruta: "",
             productos: productosNoRepetidos,
             clave: lastclave+1,
@@ -558,7 +642,6 @@ function generarPedidoPadre() {
           };
 
       let key = pedidoPadreRef.push(datosPedidoPadre).getKey();
-
       let pedidoPadreRefKey = db.ref(`pedidoPadre/${key}/pedidosHijos`);
       let historialPedidosEntradaRef = db.ref('historialPedidosEntrada');
       let pedidoEntradaRef = db.ref('pedidoEntrada');
@@ -628,6 +711,7 @@ function generarPedidoPadre() {
         fechaCreacionPadre: fechaCreacionPadre,
         fechaRuta: "",
         ruta: "",
+        verificado: false,
         productos: productosNoRepetidos,
         clave: 1,
         estado: "En proceso"
@@ -730,15 +814,35 @@ function cancelarPedidoPadre() {
 
 function pedidosRecibidos() {
   $('#pedidosEnProceso').hide();
+  $('#pedidosFinalizados').hide();
   $('#historialPedidos').hide();
   $('#pedidosRecibidos').show();
 
   mostrarPedidos();
 }
 
+// $('#tabPedidosRecibidos').on('shown.bs.tab', function (e) {
+//   mostrarPedidos();
+//   $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+
+//   console.log("pedidos recibidos")
+// });
+
+// $('#tabPedidosEnProcesoTerminados').on('shown.bs.tab', function (e) {
+//   mostrarPedidosEnProceso();
+//   $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+// });
+
+// $('#tabHistorialPedidos').on('shown.bs.tab', function (e) {
+//   mostrarHistorialPedidos();
+//   console.log("tabHistorial")
+//   $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+// })
+
 function pedidosEnProceso() {
   $('#pedidosRecibidos').hide();
   $('#historialPedidos').hide();
+  $('#pedidosFinalizados').hide();
   $('#pedidosEnProceso').show();
 
   mostrarPedidosEnProceso();
@@ -747,9 +851,19 @@ function pedidosEnProceso() {
 function historialPedidos() {
   $('#pedidosRecibidos').hide();
   $('#pedidosEnProceso').hide();
+  $('#pedidosFinalizados').hide();
   $('#historialPedidos').show();
 
   mostrarHistorialPedidos();
+}
+
+function pedidosFinalizados() {
+  $('#pedidosRecibidos').hide();
+  $('#pedidosEnProceso').hide();
+  $('#historialPedidos').hide();
+  $('#pedidosFinalizados').show();
+
+  mostrarPedidosFinalizados();
 }
 
 function mostrarNotificaciones() {

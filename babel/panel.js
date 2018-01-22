@@ -187,6 +187,8 @@ function eliminarOrden(idOrden) {
 function mostrarHistorialPedidos() {
   var tabla = $("#tablaHistorialPedidos").DataTable({
     destroy: true,
+    // "scrollY": "300px",
+    // "scrollCollapse": true,
     "language": {
       "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
     },
@@ -213,7 +215,7 @@ function mostrarHistorialPedidos() {
           case "En proceso":
             estado = "<td class=\"no-padding text-center\"><i style=\"color:#FF8000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;\" class=\"material-icons center\">fiber_manual_record</i></td>";
             break;
-          case "Lista":
+          case "Finalizado":
             estado = "<td class=\"no-padding text-center\"><i style=\"color:#70E707; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;\" class=\"material-icons center\">fiber_manual_record</i></td>";
             break;
         }
@@ -225,7 +227,7 @@ function mostrarHistorialPedidos() {
         moment.locale('es');
         var fechaCapturaMostrar = moment(fechaCaptura).format('LL');
 
-        filas += "<tr style=\"padding:0px 0px 0px;\" class=\"no-pading\">\n                  <td>" + pedido + "</td>\n                  <td>" + fechaCapturaMostrar + "</td>\n                  <td>" + pedidosEntrada[pedido].encabezado.tienda + "</td>\n                  <td>" + pedidosEntrada[pedido].encabezado.ruta + "</td>\n                  <td class=\"no-padding text-center\"><button type=\"button\" class=\"btn btn-info btn-sm\"><span style=\"padding-bottom:0px;\" class=\"glyphicon glyphicon-print\"></span></button></td>\n                  " + estado + "\n               </tr>";
+        filas += "<tr style=\"padding:0px 0px 0px;\" class=\"no-pading\">\n                  <td>" + pedido + "</td>\n                  <td>" + fechaCapturaMostrar + "</td>\n                  <td>" + pedidosEntrada[pedido].encabezado.tienda + "</td>\n                  <td>" + pedidosEntrada[pedido].encabezado.ruta + "</td>\n                  <td class=\"no-padding text-center\"><button type=\"button\" class=\"btn btn-info btn-sm\"><span style=\"padding-bottom:0px;\" class=\"glyphicon glyphicon-print\"></span></button></td>\n                  <!--" + estado + "-->\n               </tr>";
       }
     }
 
@@ -335,6 +337,71 @@ function mostrarPedidosEnProceso() {
     $('#pPedidosProceso').remove();
     $('#loaderPedidosEnProceso').remove();
     $('#tablaPedidosEnProceso').removeClass('hidden');
+    tabla.rows.add($(filas)).columns.adjust().draw();
+
+    $('.input-group.date').datepicker({
+      autoclose: true,
+      format: "dd/mm/yyyy",
+      startDate: "today",
+      language: "es"
+    });
+  });
+}
+
+function mostrarPedidosFinalizados() {
+  var tabla = $("#tablaPedidosFinalizados").DataTable({
+    destroy: true,
+    "language": {
+      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
+    },
+    "searching": false,
+    "ordering": false
+  });
+
+  var pedidosPadreRef = db.ref('pedidoPadre');
+  pedidosPadreRef.on('value', function (snapshot) {
+    var loader = $('#loaderPedidosFinalizados');
+    var pedidosPadre = snapshot.val();
+    if (pedidosPadre == null || pedidosPadre == undefined) {
+      loader.remove();
+      $('#pPedidosFinalizados').html('No se encontraron pedidos finalizados');
+    }
+    var filas = "";
+    tabla.clear();
+    for (var pedidoPadre in pedidosPadre) {
+      if (pedidosPadre[pedidoPadre].estado == "Finalizado") {
+        var diaCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(0, 2);
+        var mesCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(3, 2);
+        var añoCaptura = pedidosPadre[pedidoPadre].fechaCreacionPadre.substr(6, 4);
+        var fechaCaptura = mesCaptura + "/" + diaCaptura + "/" + añoCaptura;
+        moment.locale('es');
+
+        var fechaCapturaMostrar = moment(fechaCaptura).format('LL');
+
+        var fechaRutaMostrar = void 0;
+        var rutaMostrar = void 0;
+        if (pedidosPadre[pedidoPadre].fechaRuta.length > 0) {
+          var diaRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(0, 2);
+          var mesRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(3, 2);
+          var añoRuta = pedidosPadre[pedidoPadre].fechaRuta.substr(6, 4);
+          var fechaRuta = mesRuta + "/" + diaRuta + "/" + añoRuta;
+
+          fechaRutaMostrar = moment(fechaRuta).format('LL');
+        } else {
+          fechaRutaMostrar = "Fecha pendiente";
+        }
+        if (pedidosPadre[pedidoPadre].ruta.length == 0) {
+          rutaMostrar = "Ruta pendiente";
+        } else {
+          rutaMostrar = pedidosPadre[pedidoPadre].ruta;
+        }
+
+        filas += "<tr>\n                    <td>" + pedidosPadre[pedidoPadre].clave + "</td>\n                    <td>" + fechaCapturaMostrar + "</td>\n                    <td>" + fechaRutaMostrar + "</td>\n                    <td>" + rutaMostrar + "</td>\n                    <td class=\"text-center\">" + (pedidosPadre[pedidoPadre].agente != undefined ? '<div class="radioBtn btn-group"><a class="btn btn-sm btn-agente">' + pedidosPadre[pedidoPadre].agente + '</a></div>' : "") + "</td>\n                    <td class=\"text-center\">\n                      <span style=\"background-color:#FFCC25; color:#000000;\" class=\"badge\">En proceso</span>\n                    </td>\n                    <td class=\"text-center\"><a class=\"btn btn-default btn-sm\" href=\"pedidoPadre.html?id=" + pedidoPadre + "\"><span class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</a></td>\n                  </tr>";
+      }
+    }
+    $('#pPedidosFinalizados').remove();
+    $('#loaderPedidosFinalizados').remove();
+    $('#tablaPedidosFinalizados').removeClass('hidden');
     tabla.rows.add($(filas)).columns.adjust().draw();
 
     $('.input-group.date').datepicker({
@@ -523,7 +590,6 @@ function generarPedidoPadre() {
         };
 
         var key = pedidoPadreRef.push(datosPedidoPadre).getKey();
-
         var pedidoPadreRefKey = db.ref("pedidoPadre/" + key + "/pedidosHijos");
         var historialPedidosEntradaRef = db.ref('historialPedidosEntrada');
         var pedidoEntradaRef = db.ref('pedidoEntrada');
@@ -688,15 +754,35 @@ function cancelarPedidoPadre() {
 
 function pedidosRecibidos() {
   $('#pedidosEnProceso').hide();
+  $('#pedidosFinalizados').hide();
   $('#historialPedidos').hide();
   $('#pedidosRecibidos').show();
 
   mostrarPedidos();
 }
 
+// $('#tabPedidosRecibidos').on('shown.bs.tab', function (e) {
+//   mostrarPedidos();
+//   $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+
+//   console.log("pedidos recibidos")
+// });
+
+// $('#tabPedidosEnProcesoTerminados').on('shown.bs.tab', function (e) {
+//   mostrarPedidosEnProceso();
+//   $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+// });
+
+// $('#tabHistorialPedidos').on('shown.bs.tab', function (e) {
+//   mostrarHistorialPedidos();
+//   console.log("tabHistorial")
+//   $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+// })
+
 function pedidosEnProceso() {
   $('#pedidosRecibidos').hide();
   $('#historialPedidos').hide();
+  $('#pedidosFinalizados').hide();
   $('#pedidosEnProceso').show();
 
   mostrarPedidosEnProceso();
@@ -705,9 +791,19 @@ function pedidosEnProceso() {
 function historialPedidos() {
   $('#pedidosRecibidos').hide();
   $('#pedidosEnProceso').hide();
+  $('#pedidosFinalizados').hide();
   $('#historialPedidos').show();
 
   mostrarHistorialPedidos();
+}
+
+function pedidosFinalizados() {
+  $('#pedidosRecibidos').hide();
+  $('#pedidosEnProceso').hide();
+  $('#historialPedidos').hide();
+  $('#pedidosFinalizados').show();
+
+  mostrarPedidosFinalizados();
 }
 
 function mostrarNotificaciones() {

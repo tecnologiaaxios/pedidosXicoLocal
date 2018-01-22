@@ -97,8 +97,9 @@
       <div id="page-wrapper">
         <div class="row">
           <ul class="nav nav-pills nav-justified" style="padding:30px;">
-            <li role="presentation" class="active"><a onclick="pedidosRecibidos()" class="pills" href="#PedidosRecibidos" aria-controls="PedidosRecibidos" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Pedidos recibidos</a></li>
+            <li role="presentation" class="active"><a onclick="pedidosRecibidos()" class="pills" href="#pedidosRecibidos" aria-controls="pedidosRecibidos" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Pedidos recibidos</a></li>
             <li role="presentation"><a onclick="pedidosEnProceso()" class="pills" href="#pedidosEnProceso" aria-controls="pedidosEnProceso" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Pedidos en proceso</a></a></li>
+            <li role="presentation"><a onclick="pedidosFinalizados()" class="pills" href="#pedidosFinalizados" aria-controls="pedidosFinalizados" role="tab" data-toggle="tab"><i class="fa fa-check-square-o" aria-hidden="true"></i> Pedidos finalizados</a></a></li>
             <li role="presentation"><a onclick="historialPedidos()" class="pills" href="#historialPedidos" aria-controls="historialPedidos" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-folder-open"></span> Historial de pedidos</a></a></li>
           </ul>
           <div class="tab-content">
@@ -192,57 +193,88 @@
                   </div>
                 <!--</div> -->
               </div>
-            </div>
-            <div role="tabpanel" class="tab-pane" id="pedidosEnProceso">
-              <div id="loaderPedidosEnProceso" class="loader"></div>
-              <h4 class="text-center" id="pPedidosProceso"></h4>
-              <div class="container-fluid">
-                <div class="panel panel-default">
-                  <div class="panel-body">
-                    <table id="tablaPedidosEnProceso" class="table-hover hidden table table-condensed table-striped table-bordered" style="margin-top:15px;">
-                      <thead>
-                        <tr>
-                          <th>Clave</th>
-                          <th>Fecha de captura</th>
-                          <th>Fecha ruta</th>
-                          <!--<th class="text-center">Modificar fecha ruta</th>-->
-                          <th>Ruta</th>
-                          <th>Agente</th>
-                          <!--<th class="text-center">Modificar ruta</th>-->
-                          <th class="text-center">Modificar</th>
-                          <th class="text-center">Estado</th>
-                          <th class="text-center">Detalles</th>
-                          <th class="text-center">Verificar</th>
-                          <th class="text-center">Finalizar</th>
-                        </tr>
-                      </thead>
-                      <tbody id="tbodyTablaPedidos">
+              <div role="tabpanel" class="tab-pane" id="pedidosEnProceso">
+                <div id="loaderPedidosEnProceso" class="loader"></div>
+                <h4 class="text-center" id="pPedidosProceso"></h4>
+                <div class="container-fluid">
+                  <div class="panel panel-default">
+                    <div class="panel-body">
+                      <table id="tablaPedidosEnProceso" class="table-hover hidden table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                        <thead>
+                          <tr>
+                            <th>Clave</th>
+                            <th>Fecha de captura</th>
+                            <th>Fecha ruta</th>
+                            <!--<th class="text-center">Modificar fecha ruta</th>-->
+                            <th>Ruta</th>
+                            <th>Agente</th>
+                            <!--<th class="text-center">Modificar ruta</th>-->
+                            <th class="text-center">Modificar</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Detalles</th>
+                            <th class="text-center">Verificar</th>
+                            <th class="text-center">Finalizar</th>
+                          </tr>
+                        </thead>
+                        <tbody id="tbodyTablaPedidos">
 
-                      </tbody>
-                    </table>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div role="presentation" class="tab-pane" id="historialPedidos">
-              <div class="container-fluid">
-                <div class="panel panel-default">
-                  <div class="panel-body">
-                    <table id="tablaHistorialPedidos" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
-                      <thead>
-                        <tr>
-                          <th>Clave</th>
-                          <th>Fecha de captura</th>
-                          <th>Tienda</th>
-                          <th>Ruta</th>
-                          <th>Imprimir</th>
-                          <th>Estado</th>
-                        </tr>
-                      </thead>
-                      <tbody id="tbodyTablaPedidos">
+              <div role="tabpanel" class="tab-pane" id="pedidosFinalizados">
+                <div id="loaderPedidosFinalizados" class="loader"></div>
+                <h4 class="text-center" id="pPedidosFinalizados"></h4>
+                <div class="container-fluid">
+                  <div class="panel panel-default">
+                    <div class="panel-body">
+                      <table id="tablaPedidosFinalizados" class="table-hover hidden table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                        <thead>
+                          <tr>
+                            <th>Clave</th>
+                            <th>Fecha de captura</th>
+                            <th>Fecha ruta</th>
+                            <!--<th class="text-center">Modificar fecha ruta</th>-->
+                            <th>Ruta</th>
+                            <th>Agente</th>
+                            <!--<th class="text-center">Modificar ruta</th>-->
+                            <!-- <th class="text-center">Modificar</th> -->
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Detalles</th>
+                            <!-- <th class="text-center">Verificar</th>
+                            <th class="text-center">Finalizar</th> -->
+                          </tr>
+                        </thead>
+                        <tbody id="tbodyTablaPedidos">
 
-                      </tbody>
-                    </table>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div role="tabpanel" class="tab-pane" id="historialPedidos">
+                <div class="container-fluid">
+                  <div class="panel panel-default">
+                    <div class="panel-body">
+                      <table id="tablaHistorialPedidos" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                        <thead>
+                          <tr>
+                            <th>Clave</th>
+                            <th>Fecha de captura</th>
+                            <th>Tienda</th>
+                            <th>Ruta</th>
+                            <th>Imprimir</th>
+                            <!-- <th>Estado</th> -->
+                          </tr>
+                        </thead>
+                        <tbody id="tbodyTablaPedidos">
+
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               </div>
