@@ -35,8 +35,23 @@ $('#btnPerfil').click( function(e) {
 haySesion();
 
 function mostrarDatos() {
+  let tabla = $(`#productos`).DataTable({
+    scrollY: "500px",
+    scrollCollapse: true,
+    destroy: true,
+    language: {
+      url: "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json",
+      searchPlaceholder: "Buscar"
+    },
+    ordering: false,
+    paging: false,
+    searching: false,
+    dom: 'Bfrtip',
+    buttons: ['excel']
+  });
+
   let idPedido = getQueryVariable('id');
-  let pedidoRef = db.ref('pedidoEntrada/'+idPedido);
+  let pedidoRef = db.ref(`pedidoEntrada/${idPedido}`);
   pedidoRef.on('value', function(snapshot) {
     let datos = snapshot.val();
 
@@ -56,8 +71,9 @@ function mostrarDatos() {
     let detalle = datos.detalle;
     let cantidadProductos = datos.encabezado.cantidadProductos;
     $('#cantidad').html(`<small class="lead">${cantidadProductos}</small>`);
-    let trs = "", kgTotal = 0, degusTotal = 0, pedidoPzTotal = 0, piezaTotal = 0, precioUnitarioTotal = 0, cambioFisicoTotal = 0;
-    
+    let filas = "", kgTotal = 0, degusTotal = 0, pedidoPzTotal = 0, piezaTotal = 0, precioUnitarioTotal = 0, cambioFisicoTotal = 0;
+    tabla.clear();
+
     for(let producto in detalle) {
       let datosProducto = detalle[producto];
       kgTotal += datosProducto.totalKg;
@@ -66,7 +82,7 @@ function mostrarDatos() {
       piezaTotal += datosProducto.totalPz;
       precioUnitarioTotal += datosProducto.precioUnitario;
       cambioFisicoTotal += datosProducto.cambioFisicoPz;
-      trs += `<tr>
+      filas += `<tr>
                 <td class="text-center">${datosProducto.clave}</td>
                 <td>${datosProducto.nombre}</td>
                 <td class="text-right">${datosProducto.pedidoPz}</td>
@@ -80,7 +96,7 @@ function mostrarDatos() {
                 <td class="text-center"><button class="btn btn-danger btn-xs" onclick="abrirModalEliminarProducto('${producto}', '${datosProducto.clave}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
               </tr>`;
     }
-    trs += `<tr>
+    filas += `<tr>
               <td></td>
               <td class="text-right"><strong>Totales</strong></td>
               <td class="text-right"><strong>${pedidoPzTotal}</strong></td>
@@ -94,7 +110,8 @@ function mostrarDatos() {
               <td></td>
             </tr>`;
 
-    $('#tbodyProductos').empty().append(trs);
+    //$('#tbodyProductos').empty().append(filas);
+    tabla.rows.add($(filas)).columns.adjust().draw();
   });
 }
 

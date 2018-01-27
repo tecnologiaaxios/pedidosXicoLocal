@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href='logo.ico' rel='shortcut icon' type='image/x-icon'/>
+    <title>Recepción de pedidos</title>
+    <link rel="stylesheet" type="text/css" href="css/jquery-ui.css">
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+    <link href="vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
+    <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+    <link href="dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="vendor/morrisjs/morris.css" rel="stylesheet">
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="css/icon.css">
+    <link rel="stylesheet" href="dist/css/bootstrap-select.css">
+
+    <link rel="stylesheet" href="css/dragula.min.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker.min.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker3.standalone.css">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <link rel="stylesheet" href="css/sexyradio.css">
+  </head>
+  <body>
+    <div id="wrapper">
+      <nav class="navbar navbar-default navbar-static-top fixed" role="navigation" style="margin-bottom: 0">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <img class="navbar-brand" id="logo" src="logo.png"></img>
+        </div>
+        <ul class="nav navbar-top-links navbar-right no-padding ">
+          <li id="campana" onclick="mostrarNotificaciones()" class="dropdown no-padding">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+              <!--<i class="fa fa-bell fa-fw"></i>-->
+              <i class="fa fa-bell-o" style="font-size: 25px;" aria-hidden="true" data-toggle="tooltip" data-placement="bottom" title="Notificaciones"></i>
+              <span id="spanNotificaciones" style="background-color: red; display: none;" class="badge"></span>
+              <i class="fa fa-caret-down"></i>
+            </a>
+            <ul id="contenedorNotificaciones" class="dropdown-menu dropdown-alerts">
+              <!--Notificaciones aquí-->
+            </ul>
+            <!--<div id="spanNotificaciones" style="display:none; background-color:red; color:white; border-radius:5px; padding:10%;  font-size:10px; font-family: intelo-bold; transform:translate(10px, -22px);"></div>-->
+          </li>
+          <li><a href="" id="btnPerfil"><img src="http://lorempixel.com/40/40/" alt="..." class="img-circle"></a></li>
+          <li class="dropdown no-padding">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="fa fa-caret-down"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-alerts">
+              <li class="divider"></li>
+              <li>
+                <a onclick="logout()"><span class="glyphicon glyphicon-off"></span> Cerrar sesión</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <div class="barside">
+        <img class="navbar-brand" id="logo" src="logo.png"></img>
+        <ul style="margin-top:50px; list-style:none; font-size:50px; color:white; padding:28px;">
+          <li>
+            <a style="color:white; text-decoration: none;" href="#" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+              <span style="font-size:50px;" class="material-icons no-padding">playlist_add</span>
+              <p style="white; font-size:11px; width:200px; margin-left:-14px; margin-top:-15px;">Formar Pedido</p>
+            </a>
+          </li>
+          <li>
+            <a style="color:white; text-decoration: none;" href="tickets.html">
+              <span style="font-size:35px;" class="material-icons no-padding">receipt</span>
+              <p style="white; font-size:11px; width:200px; margin-left:-14px; margin-top:-15px;">Revisar tickets</p>
+            </a>
+          </li>
+          <!-- <li>
+            <a style="color:white; text-decoration: none;" href="agentes.html">
+              <span style="font-size:35px;" class="material-icons no-padding">group</span>
+              <p style="white; font-size:11px; width:200px; margin-left:-14px; margin-top:-15px;">Ver agentes</p>
+            </a>
+          </li> -->
+        </ul>
+      </div>
+      <div id="page-wrapper">
+        <div class="row">
+          <ul class="nav nav-pills nav-justified" style="padding:30px;">
+            <li role="presentation" class="active"><a onclick="pedidosRecibidos()" class="pills" href="#pedidosRecibidos" aria-controls="pedidosRecibidos" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-arrow-right" aria-hidden="true"></span> Pedidos recibidos</a></li>
+            <li role="presentation"><a onclick="pedidosEnProceso()" class="pills" href="#pedidosEnProceso" aria-controls="pedidosEnProceso" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span> Pedidos en proceso</a></a></li>
+            <li role="presentation"><a onclick="pedidosFinalizados()" class="pills" href="#pedidosFinalizados" aria-controls="pedidosFinalizados" role="tab" data-toggle="tab"><i class="fa fa-check-square-o" aria-hidden="true"></i> Pedidos finalizados</a></a></li>
+            <li role="presentation"><a onclick="historialPedidos()" class="pills" href="#historialPedidos" aria-controls="historialPedidos" role="tab" data-toggle="tab"><span class="glyphicon glyphicon-folder-open"></span> Historial de pedidos</a></a></li>
+          </ul>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="pedidosRecibidos">
+              <div class="container-fluid">
+                <!-- <ul class="nav nav-tabs" role="tablist">
+                  <li role="presentation" class="active"><a id="pestañaPedidos" onclick="pedidosRecibidos()" href="#tabPedidos" aria-controls="tabPedidos" role="tab" data-toggle="tab">Pedidos</a></li>
+                  <li role="presentation"><a id="pestañaOrdenesCompra" onclick="mostrarOrdenesCompra()" href="#tabOrdenesCompra" aria-controls="tabOrdenesCompra" role="tab" data-toggle="tab">Ordenes de Compra</a></li>
+                </ul>
+                <div class="tab-content">
+                  <div role="tabpanel" class="tab-pane active" id="tabPedidos"> -->
+                    <div id="loaderPedidos" class="loader"></div>
+                    <div class="panel panel-default">
+                      <div class="panel-body">
+                        <table id="tablaPedidos" class="table-hover table table-condensed table-bordered table-striped" style="margin-top:15px;">
+                          <thead>
+                            <tr>
+                              <th>Clave</th>
+                              <th>Núm. de orden</th>
+                              <th>Fecha de captura</th>
+                              <th>Tienda</th>
+                              <th>Ruta</th>
+                              <th class="text-center">Detalles</th>
+                              <th class="text-center">Estado</th>
+                              <th class="text-center">Eliminar</th>
+                            </tr>
+                          </thead>
+                          <tbody id="tbodyTablaPedidos">
+
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- <div role="tabpanel" class="tab-pane" id="tabOrdenesCompra">
+                    <div class="panel panel-default">
+                      <div class="panel-body">
+                        <table id="tablaOrdenesCompra" class="table-hover table table-condensed table-bordered table-striped" style="margin-top:15px;">
+                          <thead>
+                            <tr>
+                              <th>Clave</th>
+                              <th>Fecha de captura</th>
+                              <th>Tienda</th>
+                              <th>Ruta</th>
+                              <th class="text-center">Detalles</th>
+                              <th class="text-center">Estado</th>
+                              <th class="text-center">Eliminar</th>
+                            </tr>
+                          </thead>
+                          <tbody id="tbodyTablaOrdenes">
+
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div> -->
+                  <div class="collapse" id="collapseExample">
+                    <div class="well">
+                      <div class="table-responsive">
+                        <table id="tablaPedidoPadre" class="table table-condensed table-bordered" style="padding:0px 0px 0px; ">
+                          <thead>
+                            <tr>
+                              <th>Clave</th>
+                              <th>Núm. de orden</th>
+                              <th>Fecha de captura</th>
+                              <th>Tienda</th>
+                              <th>Ruta</th>
+                              <th>Detalles</th>
+                              <th>Estado</th>
+                              <th>Eliminar</th>
+                            </tr>
+                          </thead>
+                          <tbody id="tbodyTablaPedidoPadre" style="border: 2px solid grey; border-style: dashed; height:200px; width:100%;"  class="tabla-drag">
+                            <h4>Arrastra los pedidos dentro de las líneas punteadas para agruparlos</h4>
+                            <tr id="vacio" style="padding:0px 0px 0px;" class="no-pading">
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        <button class="btn btn-success" type="button" onclick="generarPedidoPadre()">Generar pedido</button>
+                        <button class="btn btn-danger" type="button" onclick="cancelarPedidoPadre()">Cancelar</button>
+                      </div>
+                    </div>
+                  </div>
+                <!--</div> -->
+              </div>
+              <div role="tabpanel" class="tab-pane" id="pedidosEnProceso">
+                <div id="loaderPedidosEnProceso" class="loader"></div>
+                <h4 class="text-center" id="pPedidosProceso"></h4>
+                <div class="container-fluid">
+                  <div class="panel panel-default">
+                    <div class="panel-body">
+                      <table id="tablaPedidosEnProceso" class="table-hover hidden table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                        <thead>
+                          <tr>
+                            <th>Clave</th>
+                            <th>Fecha de captura</th>
+                            <th>Fecha ruta</th>
+                            <!--<th class="text-center">Modificar fecha ruta</th>-->
+                            <th>Ruta</th>
+                            <th>Agente</th>
+                            <!--<th class="text-center">Modificar ruta</th>-->
+                            <th class="text-center">Modificar</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Detalles</th>
+                            <th class="text-center">Verificar</th>
+                            <th class="text-center">Finalizar</th>
+                          </tr>
+                        </thead>
+                        <tbody id="tbodyTablaPedidos">
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div role="tabpanel" class="tab-pane" id="pedidosFinalizados">
+                <div id="loaderPedidosFinalizados" class="loader"></div>
+                <h4 class="text-center" id="pPedidosFinalizados"></h4>
+                <div class="container-fluid">
+                  <div class="panel panel-default">
+                    <div class="panel-body">
+                      <table id="tablaPedidosFinalizados" class="table-hover hidden table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                        <thead>
+                          <tr>
+                            <th>Clave</th>
+                            <th>Fecha de captura</th>
+                            <th>Fecha ruta</th>
+                            <!--<th class="text-center">Modificar fecha ruta</th>-->
+                            <th>Ruta</th>
+                            <th>Agente</th>
+                            <!--<th class="text-center">Modificar ruta</th>-->
+                            <!-- <th class="text-center">Modificar</th> -->
+                            <th class="text-center">Estado</th>
+                            <th class="text-center">Detalles</th>
+                            <!-- <th class="text-center">Verificar</th>
+                            <th class="text-center">Finalizar</th> -->
+                          </tr>
+                        </thead>
+                        <tbody id="tbodyTablaPedidos">
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div role="tabpanel" class="tab-pane" id="historialPedidos">
+                <div class="container-fluid">
+                  <div class="panel panel-default">
+                    <div class="panel-body">
+                      <table id="tablaHistorialPedidos" class="table-hover table table-condensed table-striped table-bordered" style="margin-top:15px;">
+                        <thead>
+                          <tr>
+                            <th>Clave</th>
+                            <th>Fecha de captura</th>
+                            <th>Tienda</th>
+                            <th>Ruta</th>
+                            <th>Imprimir</th>
+                            <!-- <th>Estado</th> -->
+                          </tr>
+                        </thead>
+                        <tbody id="tbodyTablaPedidos">
+
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="modalModificarRuta" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Modificar datos</h4>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="fechaRuta">Fecha ruta:</label>
+                        <div class="input-group date">
+                          <input id="fechaRuta" class="form-control input-sm" type="text" placeholder="Fecha de ruta">
+                          <span style="color: white;" class="input-group-addon btn-primary btn-sm"><i class="fa fa-calendar"></i></span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                        <label for="ruta">Ruta:</label>
+                        <input class="form-control" placeholder="Ruta" type="text" name="ruta" id="ruta">
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <label for="agente">Agente:</label>
+                      <select name="agente" id="agente" class="form-control">
+                        
+                      </select>
+                    </div>
+                    <!-- <div class="col-md-10">
+                      <label for="agente">Asignar agente:</label>
+                      <div class="input-group">
+                        <select name="agente" id="agente" class="form-control">
+                        
+                        </select>
+                        <span class="input-group-btn">
+                          <button id="btnAsignarAgente" onclick="asignarAgente()" class="btn btn-default">Asignar</button>
+                        </span>
+                      </div>
+                    </div> -->
+                  </div><!-- <br> -->
+                  <!-- <div class="row">
+                    <div class="col-md-6">
+                      <label for="">Agente asignado:</label>
+                      <a id="agenteAsignado" class="hidden btn btn-agente"></a>
+                    </div>
+                  </div>   -->            
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                  <button id="btnGuardarRuta" type="button" class="btn btn-success">Guardar</button>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
+          <div id="modalConfirmarEliminarPedido" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Confirmar eliminación</h4>
+                </div>
+                <div class="modal-body">
+                  <p>¿Realmente desea eliminar este pedido?</p>
+                </div>
+                <div class="modal-footer">
+                  <button id="btnCancelar" type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                  <button id="btnConfirmar" type="button" class="btn btn-primary" data-dismiss="modal">Confirmar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="modalConfirmarEliminarOrden" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Confirmar eliminación</h4>
+                </div>
+                <div class="modal-body">
+                  <p>¿Realmente desea eliminar este pedido?</p>
+                </div>
+                <div class="modal-footer">
+                  <button id="btnCancelarOrden" type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                  <button id="btnConfirmarOrden" type="button" class="btn btn-primary" data-dismiss="modal">Confirmar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="modalPerfil" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Editar perfil</h4>
+                </div>
+                <div class="modal-body">
+                  <form>
+                    <div class="row">
+                      <div class="col-md-3">
+                        <div class="thumbnail card" data-toggle="tooltip">
+                          <img src="http://lorempixel.com/40/40/" style="height: 200px;">
+                        </div>
+                        <div class="form-group">
+                          <input type="file" accept="image/jpeg" class="form-control">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="nombreEditar">Nombre:</label>
+                          <input type="text" class="form-control" id="nombreEditar">
+                          <span id="helpBlockNombreEditar" class="hidden help-block">Campo obligatorio</span>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="emailEditar">Email:</label>
+                          <input type="text" class="form-control" id="emailEditar">
+                          <span id="helpBlockEmailEditar" class="hidden help-block">Campo obligatorio</span>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="puestoEditar">Puesto:</label>
+                          <input type="text" class="form-control" id="puestoEditar" readonly>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="regionEditar">Región:</label>
+                          <input type="text" class="form-control" id="regionEditar" readonly>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                          <label for="descripcionEditar">Descripción</label>
+                          <textarea id="descripcionEditar" class="form-control" name="descripcionEditar" rows="3" cols="80" readonly></textarea>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group">
+                          <label for="usernameEditar">Nombre de usuario:</label>
+                          <input type="text" class="form-control" id="usernameEditar">
+                          <span id="helpBlockUsernameEditar" class="hidden help-block">Campo obligatorio</span>
+                        </div>
+                      </div>
+                      <div class="col-md-5">
+                        <label for="contraseñaEditar">Cambiar contraseña:</label>
+                        <div class="input-group">
+                          <input type="text" class="form-control" id="contraseñaEditar" name="contraseñaEditar" readonly>
+                          <span class="input-group-btn">
+                            <button onclick="permitirCambioContraseña()" class="btn btn-default" type="button"><i class="fa fa-pencil"></i></button>
+                          </span>
+                          <span class="input-group-btn">
+                            <button id="btnCambiarContraseña" class="btn btn-success" type="button" disabled>Guardar</button>
+                          </span>
+                        </div>
+                        <span id="helpBlockContraseñaEditar" class="hidden help-block"></span>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                  <button id="btnActualizarProducto" type="button" class="btn btn-primary">Guardar cambios</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="modalFinalizarPedidoPadre" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                  <h4 class="modal-title">Finalizar pedido</h4>
+                </div>
+                <div class="modal-body">
+                  <p>¿Estás seguro que deseas finalizar el pedido?</p>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                  <button id="btnFinalizarPedidoPadre" type="button" class="btn btn-primary">Sí</button>
+                </div>
+              </div><!-- /.modal-content -->
+            </div><!-- /.modal-dialog -->
+          </div><!-- /.modal -->
+        </div>
+      </div>
+    </div>
+    <script src="./node_modules/jquery/dist/jquery.min.js"></script>
+    <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
+    <script src="js/panel.min.js"></script><!--Todos los javascript están concatenados y minificados en este archivo-->
+
+    <!-- <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="dist/js/bootstrap-select.js"></script>
+    <script src="vendor/metisMenu/metisMenu.min.js"></script>
+    <script src="dist/js/sb-admin-2.js"></script>
+    <script src="vendor/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+    <script src="vendor/datatables-responsive/dataTables.responsive.js"></script>
+    <script src="js/bootstrap-datepicker.min.js"></script>
+    <script src="js/bootstrap-datepicker.es.min.js"></script>
+    <script src="js/bootstrap-tooltip.js"></script>
+    <script src="js/jquery.toaster.js"></script>
+    <script src="js/firebase.js"></script>
+    <script src="js/dragula.min.js"></script>
+    <script src="js/moment-with-locales.js"></script>
+    <script src="js/panel.js"></script>
+    <script src="js/perfil.js"></script> -->
+  </body>
+</html>

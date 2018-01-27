@@ -138,7 +138,6 @@ function mostrarPedidos() {
     arreglo.reverse();
     arregloID.reverse();
 
-    $('#tablaPedidos tbody').empty();
     for(let pedido in arreglo) {
       let estado = "";
       switch(arreglo[pedido].encabezado.estado) {
@@ -154,19 +153,21 @@ function mostrarPedidos() {
           break;
       }
 
-      let diaCaptura = arreglo[pedido].encabezado.fechaCaptura.substr(0,2);
-      let mesCaptura = arreglo[pedido].encabezado.fechaCaptura.substr(3,2);
-      let añoCaptura = arreglo[pedido].encabezado.fechaCaptura.substr(6,4);
+      let encabezado = arreglo[pedido].encabezado;
+
+      let diaCaptura = encabezado.fechaCaptura.substr(0,2);
+      let mesCaptura = encabezado.fechaCaptura.substr(3,2);
+      let añoCaptura = encabezado.fechaCaptura.substr(6,4);
       let fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
       moment.locale('es');
       let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
 
       filas += `<tr style="padding:0px 0px 0px;" class="no-pading">
                   <td>${arregloID[pedido]}</td>
-                  <td>${ (arreglo[pedido].encabezado.numOrden != undefined) ? arreglo[pedido].encabezado.numOrden : "" }</td>
+                  <td>${(encabezado.numOrden != undefined) ? encabezado.numOrden : "" }</td>
                   <td>${fechaCapturaMostrar}</td>
-                  <td>${arreglo[pedido].encabezado.tienda}</td>
-                  <td>${arreglo[pedido].encabezado.ruta}</td>
+                  <td>${encabezado.tienda}</td>
+                  <td>${encabezado.ruta}</td>
                   <td class="no-padding text-center"><a href="pedido.html?id=${arregloID[pedido]}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
                   ${estado}
                   <td class="text-center"><button type="button" class="btn btn-danger btn-sm" onclick="abrirModalEliminarPedido('${arregloID[pedido]}')"><i class="glyphicon glyphicon-remove" aria-hidden="true"></i></button></td>
@@ -213,46 +214,40 @@ function mostrarHistorialPedidos() {
 
   let historialPedidosRef = db.ref('historialPedidosEntrada/');
   historialPedidosRef.on('value', function(snapshot) {
-    let nuevosId = snapshot.val();
-    let filas = "";
-
+    let pedidos = snapshot.val();
     tabla.clear();
+    let filas = "";
+    let arreglo = [], arregloID = [];
+    for(let pedido in pedidos) {
+      arreglo.push(pedidos[pedido]);
+      arregloID.push(pedido);
+    }
+    arreglo.reverse();
+    arregloID.reverse();
 
-    for(let nuevoId in nuevosId) {
-      let estado = "";
-      let pedidosEntrada = nuevosId[nuevoId];
+    for(let pedido in arreglo) {
 
-      for(let pedido in pedidosEntrada) {
-        switch(pedidosEntrada[pedido].encabezado.estado) {
-          case "Pendiente":
-            estado = `<td class="no-padding text-center"><i style="color:#d50000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
-            break;
-          case "En proceso":
-            estado = `<td class="no-padding text-center"><i style="color:#FF8000; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
-            break;
-          case "Finalizado":
-            estado = `<td class="no-padding text-center"><i style="color:#70E707; font-size:30px; margin:0px 0px; padding:0px 0px; width:25px; height:30px; overflow:hidden;" class="material-icons center">fiber_manual_record</i></td>`;
-            break;
-        }
+      let encabezado = arreglo[pedido].encabezado;
 
-        let diaCaptura = pedidosEntrada[pedido].encabezado.fechaCaptura.substr(0,2);
-        let mesCaptura = pedidosEntrada[pedido].encabezado.fechaCaptura.substr(3,2);
-        let añoCaptura = pedidosEntrada[pedido].encabezado.fechaCaptura.substr(6,4);
-        let fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
-        moment.locale('es');
-        let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
+      let diaCaptura = encabezado.fechaCaptura.substr(0,2);
+      let mesCaptura = encabezado.fechaCaptura.substr(3,2);
+      let añoCaptura = encabezado.fechaCaptura.substr(6,4);
+      let fechaCaptura = `${mesCaptura}/${diaCaptura}/${añoCaptura}`;
+      moment.locale('es');
+      let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
 
-        filas += `<tr style="padding:0px 0px 0px;" class="no-pading">
-                  <td>${pedido}</td>
+      filas += `<tr style="padding:0px 0px 0px;" class="no-pading">
+                  <td>${arregloID[pedido]}</td>
+                  <td>${(encabezado.numOrden != undefined) ? encabezado.numOrden : "" }</td>
                   <td>${fechaCapturaMostrar}</td>
-                  <td>${pedidosEntrada[pedido].encabezado.tienda}</td>
-                  <td>${pedidosEntrada[pedido].encabezado.ruta}</td>
-                  <td class="no-padding text-center"><button type="button" class="btn btn-info btn-sm"><span style="padding-bottom:0px;" class="glyphicon glyphicon-print"></span></button></td>
-                  <!--${estado}-->
-               </tr>`;
-      }
+                  <td>${encabezado.tienda}</td>
+                  <td>${encabezado.ruta}</td>
+                  <td class="no-padding text-center"><a href="pedidoHistorial.html?id=${arregloID[pedido]}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
+                </tr>`;
     }
 
+    $('#loaderPedidos').remove();
+    $('#tablaPedidos').removeClass('hidden');
     tabla.rows.add($(filas)).columns.adjust().draw();
   });
 }
@@ -333,7 +328,7 @@ function mostrarPedidosEnProceso() {
                       <span style="background-color:#FFCC25; color:#000000;" class="badge">En proceso</span>
                     </td>
                     <td class="text-center"><a class="btn btn-default btn-sm" href="pedidoPadre.html?id=${pedidoPadre}"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
-                    <td class="text-center"><button class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button></td>
+                    <td class="text-center"><button onclick="verificarPedidoPadre('${pedidoPadre}')" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button></td>
                     <td class="text-center"><button class="btn btn-success btn-sm" onclick="abrirModalFinalizarPedidoPadre('${pedidoPadre}')"><i class="fa fa-check" aria-hidden="true"></i></button></td>
                   </tr>`;
 
@@ -460,7 +455,7 @@ function mostrarPedidosFinalizados() {
 
 function abrirModalFinalizarPedidoPadre(idPedidoPadre) {
   $('#modalFinalizarPedidoPadre').modal('show');
-  $('#btnFinalizarPedidoPadre').attr('onclick', `finalizarPedidoPadre('${idPedidoPadre}'`);
+  $('#btnFinalizarPedidoPadre').attr('onclick', `finalizarPedidoPadre('${idPedidoPadre}')`);
 }
 
 function llenarSelectAgentes() {
@@ -489,6 +484,7 @@ function verificarPedidoPadre(idPedidoPadre) {
   rutaPedidoPadre.update({
     verificado: true
   });
+    $.toaster({priority: 'success', title: 'Mensaje de información', message: `Pedido verificado`});
 }
  
 function abrirModalModificarRuta(idPedidoPadre) {
@@ -643,24 +639,30 @@ function generarPedidoPadre() {
 
       let key = pedidoPadreRef.push(datosPedidoPadre).getKey();
       let pedidoPadreRefKey = db.ref(`pedidoPadre/${key}/pedidosHijos`);
-      let historialPedidosEntradaRef = db.ref('historialPedidosEntrada');
+      //let historialPedidosEntradaRef = db.ref('historialPedidosEntrada');
       let pedidoEntradaRef = db.ref('pedidoEntrada');
 
       let datosPedidosHijos = {};
       for(let pedido in pedidos) {
-        //pedidoPadreRefKey.push(pedidos[pedido]);
         datosPedidosHijos[claves[pedido]] = pedidos[pedido];
+        
+        //Las siguientes dos líneas guardan en historial los pedidos que se estan agrupando tal
+        //como se guardan en pedidosEntrada ya que al grupar se borran esos pedidos de pedidosEntrada.
+        let rutaHistorialPedidosEntrada = db.ref(`historialPedidosEntrada/${claves[pedido]}/`);
+        rutaHistorialPedidosEntrada.set(pedidos[pedido]);
 
         let promotoraRef = db.ref(`usuarios/tiendas/supervisoras/${pedidos[pedido].encabezado.promotora}`);
         promotoraRef.once('value', function(snapshot) {
           let region = snapshot.val().region;
 
+          /*Se entra a pedidosEntrada para obtener el id de la tienda de ese pedido y mandar el pedido a historial de regiones
+           *Y después removerlo de pedidosEntrada */  
           let pedidoRef = db.ref(`pedidoEntrada/${claves[pedido]}`);
           pedidoRef.once('value', function(snappy) {
 
-            let idTienda = snappy.val().encabezado.tienda.split(" ")[0];
-            let regionRef = db.ref(`regiones/${region}/${idTienda}/historialPedidos`);
-            regionRef.push(pedidos[pedido]);
+            // let idTienda = snappy.val().encabezado.tienda.split(" ")[0];
+            // let regionRef = db.ref(`regiones/${region}/${idTienda}/historialPedidos`);
+            // regionRef.push(pedidos[pedido]);
 
             pedidoEntradaRef.child(claves[pedido]).remove();
           });
@@ -668,7 +670,9 @@ function generarPedidoPadre() {
       }
 
       pedidoPadreRefKey.set(datosPedidosHijos);
-      historialPedidosEntradaRef.push(datosPedidosHijos);
+      console.log(datosPedidosHijos);
+      //historialPedidosEntradaRef.push(datosPedidosHijos);
+
 
       let row = `<tr id="vacio" style="padding:0px 0px 0px;" class="no-pading">
                   <td></td>
@@ -680,29 +684,31 @@ function generarPedidoPadre() {
                   <td></td>
                   <td></td>
                 </tr>`;
-      $('#tbodyTablaPedidoPadre').empty().append(row);
+      $('#tbodyTablaPedidoPadre').html(row);
+      $.toaster({priority: 'success', title: 'Mensaje de información', message: `Se generó el pedido padre correctamente`});
 
-      for(let promotora in promotoras) {
-        let notificacionesListaRef = db.ref(`notificaciones/tiendas/${promotoras[promotora]}/lista`);
-        moment.locale('es');
-        let formato = moment().format("MMMM DD YYYY, HH:mm:ss");
-        let fecha = formato.toString();
-        let notificacion = {
-          fecha: fecha,
-          leida: false,
-          mensaje: `El pedido: ${claves[promotora]} se ha agrupado.`
-        }
+      // for(let promotora in promotoras) {
+      //   let notificacionesListaRef = db.ref(`notificaciones/tiendas/${promotoras[promotora]}/lista`);
+      //   moment.locale('es');
+      //   let formato = moment().format("MMMM DD YYYY, HH:mm:ss");
+      //   let fecha = formato.toString();
+      //   let notificacion = {
+      //     fecha: fecha,
+      //     leida: false,
+      //     mensaje: `El pedido: ${claves[promotora]} se ha agrupado.`
+      //   }
 
-        notificacionesListaRef.push(notificacion);
+      //   notificacionesListaRef.push(notificacion);
 
-        let notificacionesRef = db.ref(`notificaciones/tiendas/${promotoras[promotora]}`);
-        notificacionesRef.once('value', function(snapshot) {
-          let notusuario = snapshot.val();
-          let cont = notusuario.cont + 1;
+      //   let notificacionesRef = db.ref(`notificaciones/tiendas/${promotoras[promotora]}`);
+      //   notificacionesRef.once('value', function(snapshot) {
+      //     let notusuario = snapshot.val();
+      //     let cont = notusuario.cont + 1;
 
-          notificacionesRef.update({cont: cont});
-        });
-      }
+      //     notificacionesRef.update({cont: cont});
+      //   });
+      // }
+      enviarNotificacion(promotoras, claves);
     }
     else {
       let fechaCreacionPadre = moment().format('DD/MM/YYYY');
@@ -719,23 +725,29 @@ function generarPedidoPadre() {
       let key = pedidoPadreRef.push(datosPedidoPadre).getKey();
 
       let pedidoPadreRefKey = db.ref(`pedidoPadre/${key}/pedidosHijos`);
-      let historialPedidosEntradaRef = db.ref('historialPedidosEntrada');
+      // let historialPedidosEntradaRef = db.ref('historialPedidosEntrada');
       let pedidoEntradaRef = db.ref('pedidoEntrada');
 
       let datosPedidosHijos = {};
       for(let pedido in pedidos) {
-        //pedidoPadreRefKey.push(pedidos[pedido]);
         datosPedidosHijos[claves[pedido]] = pedidos[pedido];
+
+        //Las siguientes dos líneas guardan en historial los pedidos que se estan agrupando tal
+        //como se guardan en pedidosEntrada ya que al grupar se borran esos pedidos de pedidosEntrada.
+        let rutaHistorialPedidosEntrada = db.ref(`historialPedidosEntrada/${claves[pedido]}/`);
+        rutaHistorialPedidosEntrada.set(pedidos[pedido]);
 
         let promotoraRef = db.ref(`usuarios/tiendas/supervisoras/${pedidos[pedido].encabezado.promotora}`);
         promotoraRef.once('value', function(snapshot) {
           let region = snapshot.val().region;
 
+          /*Se entra a pedidosEntrada para obtener el id de la tienda de ese pedido y mandar el pedido a historial de regiones
+           *Y después removerlo de pedidosEntrada */
           let pedidoRef = db.ref(`pedidoEntrada/${claves[pedido]}`);
           pedidoRef.once('value', function(snappy) {
-            let idTienda = snappy.val().encabezado.tienda.split(" ")[0];
-            let regionRef = db.ref(`regiones/${region}/${idTienda}/historialPedidos`);
-            regionRef.push(pedidos[pedido]);
+            // let idTienda = snappy.val().encabezado.tienda.split(" ")[0];
+            // let regionRef = db.ref(`regiones/${region}/${idTienda}/historialPedidos`);
+            // regionRef.push(pedidos[pedido]);
 
             pedidoEntradaRef.child(claves[pedido]).remove();
           });
@@ -743,7 +755,7 @@ function generarPedidoPadre() {
       }
 
       pedidoPadreRefKey.set(datosPedidosHijos);
-      historialPedidosEntradaRef.push(datosPedidosHijos);
+      // historialPedidosEntradaRef.push(datosPedidosHijos);
 
       let row = `<tr id="vacio" style="padding:0px 0px 0px;" class="no-pading">
                   <td scope="row" style="border:none;"></td>
@@ -753,31 +765,58 @@ function generarPedidoPadre() {
                   <td class="no-padding"></td>
                   <td class="no-padding"> </td>
                 </tr>`;
-      $('#tbodyTablaPedidoPadre').empty().append(row);
+      $('#tbodyTablaPedidoPadre').html(row);
 
-      for(let promotora in promotoras) {
-        let notificacionesListaRef = db.ref(`notificaciones/tiendas/${promotoras[promotora]}/lista`);
-        moment.locale('es');
-        let formato = moment().format("MMMM DD YYYY, HH:mm:ss");
-        let fecha = formato.toString();
-        let notificacion = {
-          fecha: fecha,
-          leida: false,
-          mensaje: "El pedido: " + claves[promotora] + " se ha agrupado."
-        }
+      $.toaster({priority: 'success', title: 'Mensaje de información', message: `Se generó el pedido padre correctamente`});
 
-        notificacionesListaRef.push(notificacion);
+      // for(let promotora in promotoras) {
+      //   let notificacionesListaRef = db.ref(`notificaciones/tiendas/${promotoras[promotora]}/lista`);
+      //   moment.locale('es');
+      //   let formato = moment().format("MMMM DD YYYY, HH:mm:ss");
+      //   let fecha = formato.toString();
+      //   let notificacion = {
+      //     fecha: fecha,
+      //     leida: false,
+      //     mensaje: "El pedido: " + claves[promotora] + " se ha agrupado."
+      //   }
 
-        let notificacionesRef = db.ref('notificaciones/tiendas/'+promotoras[promotora]);
-        notificacionesRef.once('value', function(snapshot) {
-          let notusuario = snapshot.val();
-          let cont = notusuario.cont + 1;
+      //   notificacionesListaRef.push(notificacion);
 
-          notificacionesRef.update({cont: cont});
-        });
-      }
+      //   let notificacionesRef = db.ref('notificaciones/tiendas/'+promotoras[promotora]);
+      //   notificacionesRef.once('value', function(snapshot) {
+      //     let notusuario = snapshot.val();
+      //     let cont = notusuario.cont + 1;
+
+      //     notificacionesRef.update({cont: cont});
+      //   });
+      // }
+      enviarNotificacion(promotoras, claves);
     }
   });
+}
+
+function enviarNotificacion(promotoras, claves) {
+  for(let promotora in promotoras) {
+    let notificacionesListaRef = db.ref(`notificaciones/tiendas/${promotoras[promotora]}/lista`);
+    moment.locale('es');
+    let formato = moment().format("MMMM DD YYYY, HH:mm:ss");
+    let fecha = formato.toString();
+    let notificacion = {
+      fecha: fecha,
+      leida: false,
+      mensaje: "El pedido: " + claves[promotora] + " se ha agrupado."
+    }
+
+    notificacionesListaRef.push(notificacion);
+
+    let notificacionesRef = db.ref('notificaciones/tiendas/'+promotoras[promotora]);
+    notificacionesRef.once('value', function(snapshot) {
+      let notusuario = snapshot.val();
+      let cont = notusuario.cont + 1;
+
+      notificacionesRef.update({cont: cont});
+    });
+  }
 }
 
 function cancelarPedidoPadre() {

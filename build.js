@@ -4,7 +4,7 @@ var electronInstaller = require('electron-winstaller');
 // In this case, we can use relative paths
 var settings = {
     // Specify the folder where the built app is located
-    appDirectory: './PedidosXico-win32-x64',
+    appDirectory: './release-builds/PedidosXico-win32-x64',
     // Specify the existing folder where 
     outputDirectory: './installers',
     // The name of the Author of the app (the name of your company)

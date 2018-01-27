@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="dist/css/bootstrap-select.css">
     <link rel="stylesheet" href="css/dragula.min.css">
     <link rel="stylesheet" href="css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="css/buttons.dataTables.min.css">
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -98,7 +99,7 @@
                       <div class="panel-body">
                         <form class="form-inline">
                           <div class="form-group">
-                            <span class="glyphicon glyphicon-filter"></span></span>Filtrar por: </span>
+                            <span class="glyphicon glyphicon-filter"></span><span>Filtrar por: </span>
                             <select id="tiendas" class="form-control"></select>
                           </div>
                           <div class="form-group">
@@ -128,6 +129,8 @@
                                 <th>Descripción</th>
                                 <th>Total Kg</th>
                                 <th>Total Kg</th>
+                                <th>Precio unit.</th>
+                                <th>Importe</th>
                               </tr>
                             </thead>
                             <tbody id="tbodyTablaPedidos">
@@ -154,7 +157,7 @@
                       <div class="panel-body">
                         <form class="form-inline">
                           <div class="form-group">
-                            <span class="glyphicon glyphicon-filter"></span></span>Filtrar por: </span>
+                            <span class="glyphicon glyphicon-filter"></span><span>Filtrar por: </span>
                             <select id="tiendasChecado" class="form-control"></select>
                           </div>
                           <div class="form-group">
@@ -189,15 +192,13 @@
                 </div> 
               </div>
             </div>
-            
-            </table>
           </div><!-- /.col-lg-12 -->
         </div><!-- /.row -->
       </div><!-- /#page-wrapper -->
     </div><!-- /#wrapper -->
     <!-- jQuery -->
-    <script src="js/jquery-3.2.1.min.js"></script>
-    <!-- <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script> -->
+    <!-- <script src="js/jquery-3.2.1.min.js"></script> -->
+    <script>window.$ = window.jQuery = require('./js/jquery-3.2.1.min.js')</script>
     <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
     <!--<script src="vendor/bootstrap/js/bootstrap.min.js"></script>-->
     <script src="vendor/metisMenu/metisMenu.min.js"></script>
@@ -226,6 +227,14 @@
       firebase.initializeApp(config);
     </script>
     <!--<script src='https://cdnjs.cloudflare.com/ajax/libs/dragula/$VERSION/dragula.min.js'></script>-->
+    <script src="js/dataTables.buttons.min.js"></script>
+    <script src="js/buttons.flash.min.js"></script>
+    <script src="js/jszip.min.js"></script>
+    <script src="js/pdfmake.min.js"></script>
+    <script src="js/vfs_fonts.js"></script>
+    <script src="js/buttons.print.min.js"></script>
+    <script src="js/buttons.bootstrap.js"></script>
+    <script src="js/buttons.html5.min.js"></script>
     <script src="js/pedidoPadre.js"></script>
     <script src="js/moment-with-locales.js"></script>
   </body>

@@ -125,13 +125,41 @@ function mostrarPedidosChecados() {
 }
 
 function mostrarTodas() {
+  let tabla = $(`#tablaPedidos`).DataTable();
+  tabla.destroy();
+  $('#tablaPedidos').empty();
+
+  tabla = $(`#tablaPedidos`).DataTable({
+    scrollY: "500px",
+    scrollCollapse: true,
+    // destroy: true,
+    language: {
+      url: "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json",
+      searchPlaceholder: "Buscar"
+    },
+    ordering: false,
+    paging: false,
+    searching: false,
+    dom: 'Bfrtip',
+    buttons: ['excel'],
+    "columns": [
+      { "title": "Clave" },
+      { "title": "Descripción" },
+      { "title": "Total Pz" },
+      { "title": "Total Kg" },
+      { "title": "Precio unit." },
+      { "title": "Importe" }
+    ]
+  });
+
   $('#tableinfo').hide();
   let idPedidoPadre = getQueryVariable('id');
-  let tiendasRef = db.ref('pedidoPadre/'+idPedidoPadre+'/productos');
+  let tiendasRef = db.ref(`pedidoPadre/${idPedidoPadre}/productos`);
   tiendasRef.on('value', function(snapshot) {
     let productos = snapshot.val();
 
     let filas = "";
+    tabla.clear();
 
     let TotalPz, TotalKg;
     let TotalPzs = 0, TotalKgs = 0, TotalPrecUni = 0, TotalImporte = 0;
@@ -158,19 +186,25 @@ function mostrarTodas() {
       TotalImporte += importe;
     }
     filas += `<tr>
-                <td></td>
+                <td>&nbsp</td>
                 <td class="text-right"><strong>Totales</strong></td>
                 <td class="text-right"><strong>${TotalPzs}</strong></td>
                 <td class="text-right"><strong>${TotalKgs.toFixed(2)}</strong></td>
                 <td class="text-right"><strong>$ ${TotalPrecUni.toFixed(2)}</strong></td>
                 <td class="text-right"><strong>$ ${TotalImporte.toFixed(2)}</strong></td>
               </tr>`;
-    $('#theadTablaPedidos').html('<tr><th>Clave</th><th>Descripción</th><th>Total Pz</th><th>Total Kg</th><th>Precio unit.</th><th>Importe</th></tr>');
-    $('#tbodyTablaPedidos').html(filas);
+    // $('#theadTablaPedidos').html('<tr><th>Clave</th><th>Descripción</th><th>Total Pz</th><th>Total Kg</th><th>Precio unit.</th><th>Importe</th></tr>');
+    // $('#tbodyTablaPedidos').html(filas);
+
+    tabla.rows.add($(filas)).columns.adjust().draw();
   });
 }
 
 function mostrarUna(idPedidoHijo) {
+  let tabla = $(`#tablaPedidos`).DataTable();
+  tabla.destroy();
+  $('#tablaPedidos').empty();
+
   let idPedidoPadre = getQueryVariable('id');
   let tipoPedido = $('#tipoPedido').val();
   let pieza;
@@ -185,13 +219,39 @@ function mostrarUna(idPedidoHijo) {
       pieza = "Pedido Pz";
       break;
   }
-  let pedidoHijoRef = db.ref('pedidoPadre/'+idPedidoPadre+'/pedidosHijos/'+idPedidoHijo);
+
+  tabla = $(`#tablaPedidos`).DataTable({
+    scrollY: "500px",
+    scrollCollapse: true,
+    // destroy: true,
+    language: {
+      url: "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json",
+      searchPlaceholder: "Buscar"
+    },
+    ordering: false,
+    paging: false,
+    searching: false,
+    dom: 'Bfrtip',
+    buttons: ['excel'],
+    "columns": [
+      { "title": "Clave cliente" },
+      { "title": "Clave Xico" },
+      { "title": "Descripción" },
+      { "title": pieza },
+      { "title": "Kg" },
+      { "title": "Precio unit." }, 
+      { "title": "Importe" }
+    ]
+  });
+
+  let pedidoHijoRef = db.ref(`pedidoPadre/${idPedidoPadre}/pedidosHijos/${idPedidoHijo}`);
   pedidoHijoRef.on('value', function(snapshot) {
     let pedidoHijo = snapshot.val();
     let detalles = pedidoHijo.detalle;
     let encabezado = pedidoHijo.encabezado;
     let tienda = encabezado.tienda;
-    let row = "";
+    let filas = "";
+    tabla.clear();
     let totalPiezas = 0, totalKilos = 0, totalImporte = 0;
 
     let cantidadPiezas;
@@ -221,29 +281,30 @@ function mostrarUna(idPedidoHijo) {
       totalPiezas += cantidadPiezas;
       totalKilos += cantidadKg;
       totalImporte += Number(importe.toFixed(2));
-      row += `<tr>
-                <td>${detalles[pedido].claveConsorcio}</td>
-                <td>${detalles[pedido].clave}</td>
-                <td>${detalles[pedido].nombre}</td>
-                <td>${cantidadPiezas}</td>
-                <td>${cantidadKg.toFixed(2)}</td>
-                <td>$ ${detalles[pedido].precioUnitario.toFixed(2)}</td>
-                <td>$ ${importe.toFixed(2)}</td>
-              </tr>`;
+      filas += `<tr>
+                  <td>${detalles[pedido].claveConsorcio}</td>
+                  <td>${detalles[pedido].clave}</td>
+                  <td>${detalles[pedido].nombre}</td>
+                  <td>${cantidadPiezas}</td>
+                  <td>${cantidadKg.toFixed(2)}</td>
+                  <td>$ ${detalles[pedido].precioUnitario.toFixed(2)}</td>
+                  <td>$ ${importe.toFixed(2)}</td>
+                </tr>`;
     }
 
     let fechaImpresion = new moment().format("DD/MM/YYYY");
-    row += `<tr>
-              <td></td>
-              <td></td>
-              <td><strong>Total general</strong></td>
-              <td><strong>${totalPiezas}</strong></td>
-              <td><strong>${totalKilos.toFixed(2)}</strong></td>
-              <td></td>
-              <td><strong>$ ${totalImporte.toFixed(2)}</strong></td>
-            </tr>`;
-    $('#theadTablaPedidos').html(`<tr><th>Clave Cliente</th><th>Clave Xico</th><th>Descripción</th><th>${pieza}</th><th>Kg</th><th>Precio unit.</th><th>Importe</th></tr>`);
-    $('#tbodyTablaPedidos').html(row);
+    filas += `<tr>
+                <td>Hola</td>
+                <td>Hola</td>
+                <td><strong>Total general</strong></td>
+                <td><strong>${totalPiezas}</strong></td>
+                <td><strong>${totalKilos.toFixed(2)}</strong></td>
+                <td></td>
+                <td><strong>$ ${totalImporte.toFixed(2)}</strong></td>
+              </tr>`;
+    // $('#theadTablaPedidos').html(`<tr><th>Clave Cliente</th><th>Clave Xico</th><th>Descripción</th><th>${pieza}</th><th>Kg</th><th>Precio unit.</th><th>Importe</th></tr>`);
+    // $('#tbodyTablaPedidos').html(row);
+    tabla.rows.add($(filas)).columns.adjust().draw();
 
     $('#theadTableInfo').html(`<tr><th>O. C.:</th><th>Fecha: ${fechaImpresion}</th></tr>`);
     $('#tbodyTableInfo').html(
@@ -289,20 +350,20 @@ function mostrarUnaChecada(idPedidoHijo) {
         case 'cambioFisico':
           cantidadPiezas = prod.cambioFisicoPz;
           cantidadKg = prod.cambioFisicoKg;
-          cantidadPzEnt = (prod.cambioFisicoPzEnt != undefined) ? prod.cambioFisicoPzEnt : 0;
-          cantidadKgEnt = (prod.cambioFisicoKgEnt != undefined) ? prod.cambioFisicoKgEnt : 0;
+          cantidadPzEnt = (prod.pzCambioFisicoEnt != undefined) ? prod.pzCambioFisicoEnt : 0;
+          cantidadKgEnt = (prod.kgCambioFisicoEnt != undefined) ? prod.kgCambioFisicoEnt : 0;
           break;
         case 'degusPz':
           cantidadPiezas = prod.degusPz;
           cantidadKg = prod.degusKg;
-          cantidadPzEnt = (prod.degusPzEnt != undefined) ? prod.degusPzEnt : 0;
-          cantidadKgEnt = (prod.degusKgEnt != undefined) ? prod.degusKgEnt : 0;
+          cantidadPzEnt = (prod.pzDegusEnt != undefined) ? prod.pzDegusEnt : 0;
+          cantidadKgEnt = (prod.kgDegusEnt != undefined) ? prod.kgDegusEnt : 0;
           break;
         case 'pedidoPz':
           cantidadPiezas = prod.pedidoPz;
           cantidadKg = prod.pedidoKg;
-          cantidadPzEnt = (prod.pedidoPzEnt != undefined) ? prod.pedidoPzEnt : 0;
-          cantidadKgEnt = (prod.pedidoKgEnt != undefined) ? prod.pedidoKgEnt : 0;
+          cantidadPzEnt = (prod.pzPedidoEnt != undefined) ? prod.pzPedidoEnt : 0;
+          cantidadKgEnt = (prod.kgPedidoEnt != undefined) ? prod.kgPedidoEnt : 0;
           break;
       }
       totalPiezas += cantidadPiezas;
@@ -414,64 +475,64 @@ $('#campana').click(function() {
   verNotificaciones();
 });
 
-/*function generarPDF() {
-  let pdf = new jsPDF('p', 'pt');
+//de esta manera funciona en el navegador
+// function generarPDF() {
+//   let pdf = new jsPDF('p', 'pt');
 
-  let res = pdf.autoTableHtmlToJson(document.getElementById('tablaPedidos'));
-  let res2 = pdf.autoTableHtmlToJson(document.getElementById('tableinfo'));
-  let res3 = pdf.autoTableHtmlToJson(document.getElementById('table-bottom'));
+//   let res = pdf.autoTableHtmlToJson(document.getElementById('tablaPedidos'));
+//   let res2 = pdf.autoTableHtmlToJson(document.getElementById('tableinfo'));
+//   let res3 = pdf.autoTableHtmlToJson(document.getElementById('table-bottom'));
 
-  pdf.autoTable(res2.columns, res2.data, {
-    startY: false,
-    tableWidth: 'auto',
-    columnWidth: 'auto',
-    styles: {
-      overflow: 'linebreak'
-    },
-    margin: {top: 150}
-  });
+//   pdf.autoTable(res2.columns, res2.data, {
+//     startY: false,
+//     tableWidth: 'auto',
+//     columnWidth: 'auto',
+//     styles: {
+//       overflow: 'linebreak'
+//     },
+//     margin: {top: 75}
+//   });
 
-  pdf.autoTable(res.columns, res.data, {
-    startY: pdf.autoTableEndPosY() + 10,
-    tableWidth: 'auto',
-    columnWidth: 'auto',
-    styles: {
-      overflow: 'linebreak'
-    },
-    theme: 'grid',
-    margin: {top: 150}
-  });
+//   pdf.autoTable(res.columns, res.data, {
+//     startY: pdf.autoTableEndPosY() + 10,
+//     tableWidth: 'auto',
+//     columnWidth: 'auto',
+//     styles: {
+//       overflow: 'linebreak'
+//     },
+//     theme: 'grid',
+//     margin: {top: 150}
+//   });
 
-  pdf.autoTable(res3.columns, res3.data, {
-    startY: pdf.autoTableEndPosY() + 20,
-    tableWidth: 'auto',
-    columnWidth: 'auto',
-    styles: {
-      overflow: 'linebreak',
-      fillColor: [255, 255, 255],
-      textColor: [0, 0, 0],
-    },
-    margin: {top: 150},
-    theme: 'grid', // 'striped', 'grid',
-    tableLineColor: [255, 255, 255]
-  });
+//   pdf.autoTable(res3.columns, res3.data, {
+//     startY: pdf.autoTableEndPosY() + 20,
+//     tableWidth: 'auto',
+//     columnWidth: 'auto',
+//     styles: {
+//       overflow: 'linebreak',
+//       fillColor: [255, 255, 255],
+//       textColor: [0, 0, 0],
+//     },
+//     margin: {top: 150},
+//     theme: 'grid', // 'striped', 'grid',
+//     tableLineColor: [255, 255, 255]
+//   });
 
-  //pdf.save('Pedido.pdf');
-  //pdf.output('dataurlnewwindow');
-  var string = pdf.output('datauristring');
-  var iframe = "<iframe width='100%' height='100%' src='" + string + "'></iframe>"
-  var x = window.open();
-  x.document.open();
-  x.document.write(iframe);
-  x.document.close();
-}*/
+//   //pdf.save('Pedido.pdf');
+//   //pdf.output('dataurlnewwindow');
+//   var string = pdf.output('datauristring');
+//   var iframe = "<iframe width='100%' height='100%' src='" + string + "'></iframe>"
+//   var x = window.open();
+//   x.document.open();
+//   x.document.write(iframe);
+//   x.document.close();
+// }
 
 //De esta manera funciona en electron
 function generarPDF() {
   var jsPDF = require('jspdf');
   require('jspdf-autotable');
   let pdf = new jsPDF('p', 'pt');
-  console.log("HOla")
 
   let res = pdf.autoTableHtmlToJson(document.getElementById('tablaPedidos'));
   let res2 = pdf.autoTableHtmlToJson(document.getElementById('tableinfo'));
@@ -484,7 +545,7 @@ function generarPDF() {
     styles: {
       overflow: 'linebreak'
     },
-    margin: {top: 150}
+    margin: {top: 75}
   });
 
   pdf.autoTable(res.columns, res.data, {

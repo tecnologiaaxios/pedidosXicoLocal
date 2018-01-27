@@ -1,10 +1,10 @@
 {
-  "name": "Xico",
-  "title": "SB Admin 2",
-  "productName": "Xico",
+  "name": "PedidosXico",
+  "title": "PedidosXico",
+  "productName": "PedidosXico",
   "version": "3.3.8",
   "homepage": "http://startbootstrap.com/template-overviews/sb-admin-2",
-  "author": "Start Bootstrap",
+  "author": "Productos Xico",
   "main": "main.js",
   "license": {
     "type": "MIT",
