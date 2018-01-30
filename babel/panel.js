@@ -296,7 +296,7 @@ function mostrarPedidosEnProceso() {
           rutaMostrar = pedidosPadre[pedidoPadre].ruta;
         }
 
-        filas += "<tr>\n                    <td>" + pedidosPadre[pedidoPadre].clave + "</td>\n                    <td>" + fechaCapturaMostrar + "</td>\n                    <td>" + fechaRutaMostrar + "</td>\n                    <td>" + rutaMostrar + "</td>\n                    <td class=\"text-center\">" + (pedidosPadre[pedidoPadre].agente != undefined ? '<div class="radioBtn btn-group"><a class="btn btn-sm btn-agente">' + pedidosPadre[pedidoPadre].agente + '</a></div>' : "") + "</td>\n                    <td class=\"text-center\"><button onclick=\"abrirModalModificarRuta('" + pedidoPadre + "')\" class=\"btn btn-warning btn-sm\"><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\"></i></button></td>\n                    <td class=\"text-center\">\n                      <span style=\"background-color:#FFCC25; color:#000000;\" class=\"badge\">En proceso</span>\n                    </td>\n                    <td class=\"text-center\"><a class=\"btn btn-default btn-sm\" href=\"pedidoPadre.html?id=" + pedidoPadre + "\"><span class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</a></td>\n                    <td class=\"text-center\"><button onclick=\"verificarPedidoPadre('" + pedidoPadre + "')\" class=\"btn btn-primary btn-sm\"><span class=\"glyphicon glyphicon-list-alt\" aria-hidden=\"true\"></span></button></td>\n                    <td class=\"text-center\"><button class=\"btn btn-success btn-sm\" onclick=\"abrirModalFinalizarPedidoPadre('" + pedidoPadre + "')\"><i class=\"fa fa-check\" aria-hidden=\"true\"></i></button></td>\n                  </tr>";
+        filas += "<tr>\n                    <td>" + pedidosPadre[pedidoPadre].clave + "</td>\n                    <td>" + fechaCapturaMostrar + "</td>\n                    <td>" + fechaRutaMostrar + "</td>\n                    <td>" + rutaMostrar + "</td>\n                    <td class=\"text-center\">" + (typeof pedidosPadre[pedidoPadre].agente != "undefined" ? '<div class="radioBtn btn-group"><a class="btn btn-sm btn-agente">' + pedidosPadre[pedidoPadre].agente + '</a></div>' : "") + "</td>\n                    <td class=\"text-center\"><button onclick=\"abrirModalModificarRuta('" + pedidoPadre + "')\" class=\"btn btn-warning btn-sm\"><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\"></i></button></td>\n                    <td class=\"text-center\">\n                      <span style=\"background-color:#FFCC25; color:#000000;\" class=\"badge\">En proceso</span>\n                    </td>\n                    <td class=\"text-center\"><a class=\"btn btn-default btn-sm\" href=\"pedidoPadre.html?id=" + pedidoPadre + "\"><span class=\"glyphicon glyphicon-eye-open\"></span> Ver m\xE1s</a></td>\n                    <td class=\"text-center\"><button onclick=\"abrirModalSeparar('" + pedidoPadre + "')\" class=\"btn btn-danger btn-sm\"><i class=\"fa fa-arrows-h\" aria-hidden=\"true\"></i></button></td>\n                    <td class=\"text-center\"><button onclick=\"verificarPedidoPadre('" + pedidoPadre + "')\" class=\"btn btn-primary btn-sm\"><span class=\"glyphicon glyphicon-list-alt\" aria-hidden=\"true\"></span></button></td>\n                    <td class=\"text-center\"><button class=\"btn btn-success btn-sm\" onclick=\"abrirModalFinalizarPedidoPadre('" + pedidoPadre + "')\"><i class=\"fa fa-check\" aria-hidden=\"true\"></i></button></td>\n                  </tr>";
 
         /*filas += `<tr>
                     <td>${pedidosPadre[pedidoPadre].clave}</td>
@@ -342,6 +342,170 @@ function mostrarPedidosEnProceso() {
       language: "es"
     });
   });
+}
+
+dragula([document.getElementById('tbodyTablaPedidoSeparar'), document.getElementById('tbodyTablaPedidoSeparado')]);
+
+function abrirModalSeparar(idPedidoPadre) {
+  var tabla = $("#tablaPedidoSeparar").DataTable({
+    destroy: true,
+    language: {
+      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
+    },
+    searching: false,
+    ordering: false,
+    paging: false,
+    info: false,
+    responsive: true
+  });
+
+  var rutaPedidoPadre = db.ref("pedidoPadre/" + idPedidoPadre);
+  rutaPedidoPadre.on('value', function (snapshot) {
+    var pedidosHijos = snapshot.val().pedidosHijos;
+
+    var filas = "";
+    tabla.clear();
+    for (var pedido in pedidosHijos) {
+      filas += "<tr>\n                  <td>" + pedido + "</td>\n                  <td>" + pedidosHijos[pedido].encabezado.numOrden + "</td>\n                  <td>" + pedidosHijos[pedido].encabezado.fechaCaptura + "</td>\n                  <td>" + pedidosHijos[pedido].encabezado.tienda + "</td>\n                  <td>" + pedidosHijos[pedido].encabezado.ruta + "</td>\n                </tr>";
+    }
+    tabla.rows.add($(filas)); //columns.adjust().draw();
+  });
+
+  $('#modalSeparar').modal('show');
+  $('#btnSeparar').attr('onclick', "separar('" + idPedidoPadre + "')");
+}
+
+$('#modalSeparar').on('shown.bs.modal', function () {
+  $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+});
+
+function separar(idPedidoPadre) {
+  var pedidos = [],
+      claves = [],
+      datosNuevoPedidoPadre,
+      pedidosHijos = {},
+      productosRepetidos = [],
+      productosNoRepetidos = [];
+  var rutaPedidoPadre = db.ref("pedidoPadre/" + idPedidoPadre);
+
+  $("#tablaPedidoSeparado tbody tr").each(function (i) {
+    var clave;
+    $(this).children("td").each(function (j) {
+      if (j == 0) {
+        if ($(this).text().length > 0) {
+          clave = $(this).text();
+          claves.push(clave);
+
+          var pedidoEntradaRef = db.ref("pedidoPadre/" + idPedidoPadre + "/pedidosHijos/" + clave + "/");
+          pedidoEntradaRef.once('value', function (snapshot) {
+            var pedidoHijo = snapshot.val();
+            pedidosHijos[clave] = pedidoHijo;
+          });
+        }
+      }
+    });
+
+    if ($(this).attr('id') != "filavacia") {
+      var pedidoRef = db.ref("pedidoPadre/" + idPedidoPadre + "/pedidosHijos/" + clave);
+      pedidoRef.once('value', function (snapshot) {
+        var pedido = snapshot.val();
+        pedidos.push(pedido);
+
+        var detalle = pedido.detalle;
+        for (var producto in detalle) {
+          var datosProducto = {
+            claveConsorcio: detalle[producto].claveConsorcio,
+            clave: detalle[producto].clave,
+            precioUnitario: detalle[producto].precioUnitario,
+            nombre: detalle[producto].nombre,
+            degusPz: detalle[producto].degusPz,
+            degusKg: detalle[producto].degusKg,
+            pedidoPz: detalle[producto].pedidoPz,
+            pedidoKg: detalle[producto].pedidoKg,
+            totalKg: detalle[producto].totalKg,
+            totalPz: detalle[producto].totalPz,
+            unidad: detalle[producto].unidad,
+            cambioFisicoPz: detalle[producto].cambioFisicoPz,
+            cambioFisicoKg: detalle[producto].cambioFisicoKg
+          };
+
+          productosRepetidos.push(datosProducto);
+        }
+      });
+    }
+  });
+
+  for (var i in productosRepetidos) {
+    if (productosNoRepetidos.length == 0) {
+      productosNoRepetidos.push(productosRepetidos[i]);
+    } else {
+      var bandera = false;
+      for (var j in productosNoRepetidos) {
+
+        if (productosRepetidos[i].clave == productosNoRepetidos[j].clave) {
+          bandera = true;
+
+          var productoNoRepetido = productosNoRepetidos[j];
+          var productoRepetido = productosRepetidos[i];
+
+          productoNoRepetido.totalKg = productoNoRepetido.totalKg + productoRepetido.totalKg;
+          productoNoRepetido.totalPz = productoNoRepetido.totalPz + productoRepetido.totalPz;
+        }
+      }
+      if (bandera == false) {
+        productosNoRepetidos.push(productosRepetidos[i]);
+      }
+    }
+  }
+
+  var pedidosPadreRef = db.ref('pedidoPadre/');
+  pedidosPadreRef.once('value', function (snapshot) {
+    var existe = snapshot.val() != null;
+    if (existe) {
+      var listapedidos = snapshot.val(),
+          keys = Object.keys(listapedidos),
+          last = keys[keys.length - 1],
+          ultimoPedido = listapedidos[last],
+          lastclave = ultimoPedido.clave,
+          fechaCreacionPadre = moment().format('DD/MM/YYYY'),
+          datosPedidoPadre = {
+        agente: "",
+        fechaCreacionPadre: fechaCreacionPadre,
+        fechaRuta: "",
+        verificado: false,
+        ruta: "",
+        productos: productosNoRepetidos,
+        clave: lastclave + 1,
+        estado: "En proceso",
+        pedidosHijos: pedidosHijos
+      };
+
+      pedidosPadreRef.push(datosPedidoPadre);
+
+      for (var clave in claves) {
+        var rutaPedidosHijos = db.ref("pedidoPadre/" + idPedidoPadre + "/pedidosHijos");
+        rutaPedidosHijos.child(claves[clave]).remove();
+      }
+      limpiarTablaSeparado();
+
+      rutaPedidoPadre.once('value', function (snapshot) {
+        var pedidosHijos = snapshot.val().pedidosHijos;
+
+        if (pedidosHijos == null) {
+          var rutaPedidosPadre = db.ref('pedidoPadre');
+          rutaPedidosPadre.child(idPedidoPadre).remove();
+          $('#modalSeparar').modal('hide');
+        }
+      });
+    }
+  });
+}
+
+function limpiarTablaSeparado() {
+  var row = "<tr id=\"vacio\" style=\"padding:0px 0px 0px;\" class=\"no-pading\">\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                  <td></td>\n                </tr>";
+
+  $('#tbodyTablaPedidoSeparado').html(row);
+  $.toaster({ priority: 'success', title: 'Mensaje de información', message: "Se ha separado el pedido" });
 }
 
 function mostrarPedidosFinalizados() {
@@ -527,7 +691,7 @@ function generarPedidoPadre() {
 
         var detalle = pedido.detalle;
         for (var producto in detalle) {
-          datosProducto = {
+          var datosProducto = {
             claveConsorcio: detalle[producto].claveConsorcio,
             clave: detalle[producto].clave,
             precioUnitario: detalle[producto].precioUnitario,
@@ -632,7 +796,6 @@ function generarPedidoPadre() {
         }
 
         pedidoPadreRefKey.set(datosPedidosHijos);
-        console.log(datosPedidosHijos);
         //historialPedidosEntradaRef.push(datosPedidosHijos);
 
 

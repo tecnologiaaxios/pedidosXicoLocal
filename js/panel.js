@@ -322,12 +322,13 @@ function mostrarPedidosEnProceso() {
                     <td>${fechaCapturaMostrar}</td>
                     <td>${fechaRutaMostrar}</td>
                     <td>${rutaMostrar}</td>
-                    <td class="text-center">${(pedidosPadre[pedidoPadre].agente != undefined) ? '<div class="radioBtn btn-group"><a class="btn btn-sm btn-agente">'+pedidosPadre[pedidoPadre].agente+'</a></div>' : ""}</td>
+                    <td class="text-center">${(typeof pedidosPadre[pedidoPadre].agente != "undefined") ? '<div class="radioBtn btn-group"><a class="btn btn-sm btn-agente">'+pedidosPadre[pedidoPadre].agente+'</a></div>' : ""}</td>
                     <td class="text-center"><button onclick="abrirModalModificarRuta('${pedidoPadre}')" class="btn btn-warning btn-sm"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></button></td>
                     <td class="text-center">
                       <span style="background-color:#FFCC25; color:#000000;" class="badge">En proceso</span>
                     </td>
                     <td class="text-center"><a class="btn btn-default btn-sm" href="pedidoPadre.html?id=${pedidoPadre}"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
+                    <td class="text-center"><button onclick="abrirModalSeparar('${pedidoPadre}')" class="btn btn-danger btn-sm"><i class="fa fa-arrows-h" aria-hidden="true"></i></button></td>
                     <td class="text-center"><button onclick="verificarPedidoPadre('${pedidoPadre}')" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span></button></td>
                     <td class="text-center"><button class="btn btn-success btn-sm" onclick="abrirModalFinalizarPedidoPadre('${pedidoPadre}')"><i class="fa fa-check" aria-hidden="true"></i></button></td>
                   </tr>`;
@@ -376,6 +377,184 @@ function mostrarPedidosEnProceso() {
       language: "es"
     });
   });
+}
+
+dragula([document.getElementById('tbodyTablaPedidoSeparar'), document.getElementById('tbodyTablaPedidoSeparado')]);
+
+function abrirModalSeparar(idPedidoPadre) {
+  let tabla = $(`#tablaPedidoSeparar`).DataTable({
+    destroy: true,
+    language: {
+      "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
+    },
+    searching: false,
+    ordering: false,
+    paging: false,
+    info: false,
+    responsive: true
+  });
+
+  let rutaPedidoPadre = db.ref(`pedidoPadre/${idPedidoPadre}`);
+  rutaPedidoPadre.on('value', function(snapshot) {
+    let pedidosHijos = snapshot.val().pedidosHijos;
+
+    let filas = "";
+    tabla.clear();
+    for(let pedido in pedidosHijos) {
+      filas += `<tr>
+                  <td>${pedido}</td>
+                  <td>${pedidosHijos[pedido].encabezado.numOrden}</td>
+                  <td>${pedidosHijos[pedido].encabezado.fechaCaptura}</td>
+                  <td>${pedidosHijos[pedido].encabezado.tienda}</td>
+                  <td>${pedidosHijos[pedido].encabezado.ruta}</td>
+                </tr>`;
+    }
+    tabla.rows.add($(filas)); //columns.adjust().draw();
+
+  });
+
+  $('#modalSeparar').modal('show');
+  $('#btnSeparar').attr('onclick', `separar('${idPedidoPadre}')`);
+}
+
+$('#modalSeparar').on('shown.bs.modal', function () {
+  $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+});
+
+function separar(idPedidoPadre) {
+  var pedidos = [], claves = [], datosNuevoPedidoPadre, pedidosHijos = {},
+  productosRepetidos = [], productosNoRepetidos = [];
+  let rutaPedidoPadre = db.ref(`pedidoPadre/${idPedidoPadre}`);
+
+  $("#tablaPedidoSeparado tbody tr").each(function (i)
+  {
+    var clave;
+    $(this).children("td").each(function (j) {
+      if(j == 0) {
+        if($(this).text().length > 0) {
+          clave = $(this).text();
+          claves.push(clave);
+
+          let pedidoEntradaRef = db.ref(`pedidoPadre/${idPedidoPadre}/pedidosHijos/${clave}/`);
+          pedidoEntradaRef.once('value', function(snapshot) {
+            let pedidoHijo = snapshot.val();
+            pedidosHijos[clave] = pedidoHijo;
+          });
+        }
+      }
+    });
+
+    if($(this).attr('id') != "filavacia") {
+      let pedidoRef = db.ref(`pedidoPadre/${idPedidoPadre}/pedidosHijos/${clave}`);
+      pedidoRef.once('value', function(snapshot) {
+        let pedido = snapshot.val();
+        pedidos.push(pedido);
+
+        let detalle = pedido.detalle;
+        for(let producto in detalle) {
+          let datosProducto = {
+            claveConsorcio: detalle[producto].claveConsorcio,
+            clave: detalle[producto].clave,
+            precioUnitario: detalle[producto].precioUnitario,
+            nombre: detalle[producto].nombre,
+            degusPz: detalle[producto].degusPz,
+            degusKg: detalle[producto].degusKg,
+            pedidoPz: detalle[producto].pedidoPz,
+            pedidoKg: detalle[producto].pedidoKg,
+            totalKg: detalle[producto].totalKg,
+            totalPz: detalle[producto].totalPz,
+            unidad: detalle[producto].unidad,
+            cambioFisicoPz: detalle[producto].cambioFisicoPz,
+            cambioFisicoKg: detalle[producto].cambioFisicoKg
+          };
+
+          productosRepetidos.push(datosProducto);
+        }
+      });
+    }
+  });
+
+  for(let i in productosRepetidos) {
+    if(productosNoRepetidos.length == 0) {
+      productosNoRepetidos.push(productosRepetidos[i]);
+    }
+    else {
+      let bandera = false;
+      for(let j in productosNoRepetidos) {
+
+        if(productosRepetidos[i].clave == productosNoRepetidos[j].clave) {
+          bandera = true;
+
+          let productoNoRepetido = productosNoRepetidos[j];
+          let productoRepetido = productosRepetidos[i];
+
+          productoNoRepetido.totalKg = productoNoRepetido.totalKg + productoRepetido.totalKg;
+          productoNoRepetido.totalPz = productoNoRepetido.totalPz + productoRepetido.totalPz;
+        }
+      }
+      if(bandera == false) {
+        productosNoRepetidos.push(productosRepetidos[i]);
+      }
+    }
+  }
+
+  let pedidosPadreRef = db.ref('pedidoPadre/');
+  pedidosPadreRef.once('value', function(snapshot) {
+    let existe = (snapshot.val() != null);
+    if(existe) {
+      let listapedidos = snapshot.val(),
+          keys = Object.keys(listapedidos),
+          last = keys[keys.length-1],
+          ultimoPedido = listapedidos[last],
+          lastclave = ultimoPedido.clave,
+          fechaCreacionPadre = moment().format('DD/MM/YYYY'),
+          datosPedidoPadre = {
+            agente: "",
+            fechaCreacionPadre: fechaCreacionPadre,
+            fechaRuta: "",
+            verificado: false,
+            ruta: "",
+            productos: productosNoRepetidos,
+            clave: lastclave+1,
+            estado: "En proceso",
+            pedidosHijos: pedidosHijos
+          };
+
+      pedidosPadreRef.push(datosPedidoPadre);
+
+      for(let clave in claves) {
+        let rutaPedidosHijos = db.ref(`pedidoPadre/${idPedidoPadre}/pedidosHijos`);
+        rutaPedidosHijos.child(claves[clave]).remove();
+      }
+      limpiarTablaSeparado();
+
+      rutaPedidoPadre.once('value', function(snapshot) {
+        let pedidosHijos = snapshot.val().pedidosHijos;
+
+        if(pedidosHijos == null) {
+          let rutaPedidosPadre = db.ref('pedidoPadre');
+          rutaPedidosPadre.child(idPedidoPadre).remove();
+          $('#modalSeparar').modal('hide');
+        }
+      });
+    }
+  });
+}
+
+function limpiarTablaSeparado() {
+  let row = `<tr id="vacio" style="padding:0px 0px 0px;" class="no-pading">
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>`;
+
+  $('#tbodyTablaPedidoSeparado').html(row);
+  $.toaster({priority: 'success', title: 'Mensaje de información', message: `Se ha separado el pedido`});
 }
 
 function mostrarPedidosFinalizados() {
@@ -570,7 +749,7 @@ function generarPedidoPadre() {
 
         let detalle = pedido.detalle;
         for(let producto in detalle) {
-          datosProducto = {
+          let datosProducto = {
             claveConsorcio: detalle[producto].claveConsorcio,
             clave: detalle[producto].clave,
             precioUnitario: detalle[producto].precioUnitario,
@@ -670,7 +849,6 @@ function generarPedidoPadre() {
       }
 
       pedidoPadreRefKey.set(datosPedidosHijos);
-      console.log(datosPedidosHijos);
       //historialPedidosEntradaRef.push(datosPedidosHijos);
 
 
