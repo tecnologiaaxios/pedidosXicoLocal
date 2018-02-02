@@ -162,9 +162,12 @@ function mostrarPedidos() {
       moment.locale('es');
       let fechaCapturaMostrar = moment(fechaCaptura).format('LL');
 
+      let numeroOrden = encabezado.numOrden || "";
+      // ${(encabezado.numOrden != undefined) ? encabezado.numOrden : "" }
+
       filas += `<tr style="padding:0px 0px 0px;" class="no-pading">
                   <td>${arregloID[pedido]}</td>
-                  <td>${(encabezado.numOrden != undefined) ? encabezado.numOrden : "" }</td>
+                  <td>${numeroOrden}</td>
                   <td>${fechaCapturaMostrar}</td>
                   <td>${encabezado.tienda}</td>
                   <td>${encabezado.ruta}</td>
@@ -388,6 +391,7 @@ function abrirModalSeparar(idPedidoPadre) {
       "url": "//cdn.datatables.net/plug-ins/a5734b29083/i18n/Spanish.json"
     },
     searching: false,
+    scrollY: "200px",
     ordering: false,
     paging: false,
     info: false,
@@ -509,7 +513,7 @@ function separar(idPedidoPadre) {
           lastclave = ultimoPedido.clave,
           fechaCreacionPadre = moment().format('DD/MM/YYYY'),
           datosPedidoPadre = {
-            agente: "",
+            // agente: "",
             fechaCreacionPadre: fechaCreacionPadre,
             fechaRuta: "",
             verificado: false,
@@ -543,9 +547,6 @@ function separar(idPedidoPadre) {
 
 function limpiarTablaSeparado() {
   let row = `<tr id="vacio" style="padding:0px 0px 0px;" class="no-pading">
-                  <td></td>
-                  <td></td>
-                  <td></td>
                   <td></td>
                   <td></td>
                   <td></td>
@@ -612,7 +613,7 @@ function mostrarPedidosFinalizados() {
                     <td>${rutaMostrar}</td>
                     <td class="text-center">${(pedidosPadre[pedidoPadre].agente != undefined) ? '<div class="radioBtn btn-group"><a class="btn btn-sm btn-agente">'+pedidosPadre[pedidoPadre].agente+'</a></div>' : ""}</td>
                     <td class="text-center">
-                      <span style="background-color:#FFCC25; color:#000000;" class="badge">En proceso</span>
+                      <span style="background-color:#42f486; color:#000000;" class="badge">Finalizado</span>
                     </td>
                     <td class="text-center"><a class="btn btn-default btn-sm" href="pedidoPadre.html?id=${pedidoPadre}"><span class="glyphicon glyphicon-eye-open"></span> Ver más</a></td>
                   </tr>`;

@@ -39,8 +39,10 @@
     "jspdf-autotable": "^2.3.2"
   },
   "scripts": {
+    "gulp": "gulp es6 && gulp pluginsjs",
     "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
     "package-win": "electron-packager . PedidosXico --overwrite --asar=true --platform=win32 --arch=x64 --icon=assets/icons/win/icon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Pedidos Xico\"",
-    "build": "npm run package-mac && npm run package-win"
+    "build": "npm run package-mac && npm run package-win",
+    "compile": "npm run gulp && npm run package-win"
   }
 }
